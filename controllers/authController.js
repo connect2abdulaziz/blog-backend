@@ -7,20 +7,19 @@ const { userSchema } = require("../utils/validators/userValidator");
 const { createUser, findByEmail } = require("../services/userService");
 const { generateToken } = require("../utils/authUtils");
 
+//Login Controller
 const signup = catchAsync(async (req, res, next) => {
   // validate the input data
   const { error, value } = userSchema.validate(req.body);
   if (error) 
     return next(new AppError(error.details[0].message, 400));
   const { firstName, lastName, email, password } = value;
-  
   const result = await createUser({firstName,lastName,email,password});
   return res.status(200).json(appSuccess("User created successfully", result));
-  
 });
 
 
-
+//Login Controller
 const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
