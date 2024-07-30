@@ -8,7 +8,6 @@ module.exports = {
     let password = process.env.ADMIN_PASSWORD;
     const hashPassword = bcrypt.hashSync(password, 10);
     return QueryInterface.bulkInsert('user', [{
-      userType: '0',
       firstName: 'John',
       lastName: 'Doe',
       email: process.env.ADMIN_EMAIL,

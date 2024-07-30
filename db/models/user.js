@@ -1,6 +1,8 @@
 'use strict';
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
+const Post = require('./post');
+const Comment = require('./comment');
 
 const User = sequelize.define(
   'user',
@@ -53,5 +55,9 @@ const User = sequelize.define(
     modelName: 'user',
   }
 );
-
+// association definition
+User.hasMany(Post, { foreignKey: 'userId' });
+User.hasMany(Comment, { foreignKey: 'userId' });
+Comment.belongsTo(User, { foreignKey: 'userId' });
+Post.belongsTo(User, { foreignKey: 'userId' });
 module.exports = User;
