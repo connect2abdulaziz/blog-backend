@@ -154,6 +154,4 @@ Feel free to fork the repository and submit pull requests. If you encounter any 
 
 For any questions or feedback, you can reach me at [LinkedIn](https://www.linkedin.com/in/connect2abdulaziz).
 
-```
 
-You can copy and paste this Markdown content into your `README.md` file to provide a comprehensive overview of your project.
