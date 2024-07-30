@@ -2,6 +2,7 @@ const User = require('../db/models/user');
 const AppError = require('../utils/appError');
 const { hashPassword } = require("../utils/hashPasswordUtils");
 const { generateToken } = require('../utils/authUtils');
+const bcrypt = require('bcrypt');
 
 // Function to find a user by email
 const findByEmail = async (email) => {
@@ -47,7 +48,25 @@ const createUser = async ({ firstName, lastName, email, password }) => {
     }
 };
 
+// Function to login a user with enhanced error handling
+const loginUser = async ({ email, password }) => {
+    try {
+        // Find the user by email
+        const result = await findByEmail(email);
+        if (!result || !(await bcrypt.compare(password, result.password))) {
+            throw new AppError("Invalid email or password", 400);
+        }
+        const token = generateToken({ id: result.id });
+        return token;
+    } catch (error) {
+        if (error instanceof AppError) {
+            throw error; 
+        }
+        throw new AppError('Error logging in user', 500); 
+    }
+};
+
 module.exports = {
     findByEmail, 
-    createUser
+    createUser, loginUser
 };

@@ -3,11 +3,10 @@ const bcrypt = require("bcrypt");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const appSuccess = require("../utils/appSuccess");
-const { userSchema } = require("../utils/validators/userValidator");
-const { createUser, findByEmail } = require("../services/userService");
-const { generateToken } = require("../utils/authUtils");
+const { userSchema,loginSchema  } = require("../utils/validators/userValidator");
+const { createUser, loginUser } = require("../services/userService");
 
-//Login Controller
+//Signup Controller
 const signup = catchAsync(async (req, res, next) => {
   // validate the input data
   const { error, value } = userSchema.validate(req.body);
@@ -21,18 +20,11 @@ const signup = catchAsync(async (req, res, next) => {
 
 //Login Controller
 const login = catchAsync(async (req, res, next) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return next(new AppError("Please provide email and password", 400));
-  }
-  const result = await user.findOne({ where: { email } });
-
-  if (!result || !(await bcrypt.compare(password, result.password))) {
-    return next(new AppError("Invalid email or password", 400));
-  }
-  const token = generateToken({
-    id: result.id,
-  });
+  const {error, value} = loginSchema.validate(req.body);
+  if(error) 
+    return next(new AppError(error.details[0].message, 400));
+  const { email, password } = value;
+  const token = await loginUser({email, password});
   return res.status(200).json(appSuccess("User logged in successfully", token));
 });
 
