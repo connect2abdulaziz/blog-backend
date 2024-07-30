@@ -1,21 +1,22 @@
-// const router = require("express").Router();
-// const {
-//   createPost,
-//   getPosts,
-//   getPostById,
-//   updatePostById,
-//   deletePostById,
-// } = require("../controllers/postController");
-// const { authentication, restrictTo } = require("../controllers/authController");
+const router = require("express").Router();
+const {
+  createPost,
+  getPosts,
+  getPostById,
+  searchPosts,
+  getMyPosts,
+  updatePostById,
+  deletePostById,
+} = require("../controllers/postController");
+const { authentication } = require("../utils/authUtils");
 
-// router
-//   .route("/")
-//   .post(authentication, restrictTo("1"), createPost)
-//   .get(authentication, restrictTo("1"), getPosts);
+router.route("/").post(authentication, createPost);
+router.route("/").get(getPosts);
+router.route("/:userId").get(authentication, getMyPosts);
 
-// router
-//   .route("/:id")
-//   .get(authentication, getPostById)
-//   .patch(authentication, updatePostById)
-//   .delete(authentication, deletePostById);
-// module.exports = router;
+
+router.route("/:id").get(getPostById);
+router.route("/:id/search").get(searchPosts);
+router.route("/:id").patch(authentication, updatePostById);
+router.route("/:id").delete(authentication, deletePostById);
+module.exports = router;

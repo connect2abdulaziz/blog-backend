@@ -34,6 +34,7 @@ const authentication = catchAsync(async (req, res, next) => {
       return next(new AppError("User no longer exists", 400));
     }
     req.user = freshUser;
+    console.log(req.user);
     return next();
   });
   
