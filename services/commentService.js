@@ -1,5 +1,6 @@
 const Comment = require('../db/models/comment'); 
 const User = require('../db/models/user');
+const Post = require('../db/models/post');
 const AppError = require('../utils/appError'); 
 
 const addComment = async ({ postId, parentId, content }, userId) => {
@@ -7,7 +8,11 @@ const addComment = async ({ postId, parentId, content }, userId) => {
     if (parentId && !(await Comment.findByPk(parentId))) {
         throw new AppError("Invalid parent comment ID", 400);
     }
+    if( !await Post.findByPk(postId)) {
+        throw new AppError("Invalid post ID", 400);
+    }
     try {
+
         const newComment = await Comment.create({
             userId,
             postId,
@@ -25,7 +30,7 @@ const addComment = async ({ postId, parentId, content }, userId) => {
             ...newComment.toJSON(),
             user: {
                 firstName: user.firstName,
-                thumbnail: user.thumbnails
+                thumbnail: user.thumbnail
             }
         };
     } catch (error) {  
@@ -36,25 +41,60 @@ const addComment = async ({ postId, parentId, content }, userId) => {
 
 
 const getCommentsByPostId = async (postId) => {
+    if (!(await Post.findByPk(postId))) {
+        throw new AppError("Invalid post ID", 400);
+    }
+
     try {
+        // Fetch all comments for the specified post
         const comments = await Comment.findAll({
             where: { postId },
             include: [
                 {
                     model: User,
-                    attributes: ['id', 'firstName', 'thumbnail'] 
+                    attributes: ['id', 'firstName', 'thumbnail']
                 }
             ],
-            order: [['createdAt', 'ASC']] 
+            order: [['createdAt', 'ASC']]
         });
-        return comments;
+
+        // Function to build a hierarchical structure
+        const buildHierarchy = (comments) => {
+            const commentMap = new Map();
+            const rootComments = [];
+
+            // Create a map of all comments by ID for quick access
+            comments.forEach(comment => {
+                commentMap.set(comment.id, { ...comment.toJSON(), replies: [] });
+            });
+
+            // Build the hierarchy
+            comments.forEach(comment => {
+                if (comment.parentId) {
+                    const parentComment = commentMap.get(comment.parentId);
+                    if (parentComment) {
+                        parentComment.replies.push(commentMap.get(comment.id));
+                    }
+                } else {
+                    rootComments.push(commentMap.get(comment.id));
+                }
+            });
+
+            return rootComments;
+        };
+
+        const hierarchicalComments = buildHierarchy(comments);
+
+        return hierarchicalComments;
+        
     } catch (error) {
         throw new AppError(error.message || "An error occurred while retrieving comments", 400);
     }
 };
 
 
-const updateComment = async ({ commentId, content }) => {
+
+const updateComment = async ({content }, commentId) => {
     try {
         const comment = await Comment.findByPk(commentId);
         if (!comment) {
@@ -71,14 +111,14 @@ const updateComment = async ({ commentId, content }) => {
 };
 
 
-const deleteComment = async ({ id }) => {
+const deleteComment = async (commentId) => {
     try {
-        const comment = await Comment.findByPk(id);
+        const comment = await Comment.findByPk(commentId);
         if (!comment) {
             throw new AppError("Comment not found", 404);
         }
         await comment.destroy();
-        return id;
+        return commentId;
     } catch (error) {
         throw new AppError(error.message || "An error occurred while deleting the comment", 400);
     }

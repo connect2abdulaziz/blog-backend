@@ -5,11 +5,11 @@ const {
   updateCommentById,
   deleteCommentById,
 } = require("../controllers/commentController");
-const { authentication } = require("../controllers/authController");
+const { authentication } = require("../middleware/auth");
 
 router.route("/").post(authentication, createComment)
-router.route("/").get(authentication, postComments);
 
+router.route("/:id").get(authentication, postComments);
 router.route("/:id").patch(authentication, updateCommentById);
 router.route("/:id").delete(authentication, deleteCommentById);
 module.exports = router;

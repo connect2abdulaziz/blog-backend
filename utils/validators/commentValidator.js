@@ -33,4 +33,17 @@ const commentSchema = Joi.object({
         })
 });
 
-module.exports = commentSchema;
+
+
+const updateCommentSchema = Joi.object({
+    content: Joi.string()
+        .required()
+        .messages({
+            'string.base': 'Content must be a string',
+            'string.empty': 'Content cannot be empty',
+            'any.required': 'Content is required'
+        }),
+});
+
+
+module.exports = {commentSchema, updateCommentSchema};
