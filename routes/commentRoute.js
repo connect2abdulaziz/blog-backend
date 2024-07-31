@@ -1,22 +1,15 @@
-// const router = require("express").Router();
-// const {
-//   createComment,
-//   getComments,
-//   getCommentById,
-//   updateCommentById,
-//   deleteCommentById,
-// } = require("../controllers/commentController");
-// const { authentication, restrictTo } = require("../controllers/authController");
+const router = require("express").Router();
+const {
+  createComment,
+  postComments,
+  updateCommentById,
+  deleteCommentById,
+} = require("../controllers/commentController");
+const { authentication } = require("../middleware/auth");
 
-// router
-//   .route("/")
-//   .post(authentication, createComment)
-//   .get(authentication, getComments);
- 
+router.route("/").post(authentication, createComment)
 
-// router
-//   .route("/:id")
-//   .get(authentication, getCommentById)
-//   .patch(authentication, updateCommentById)
-//   .delete(authentication, deleteCommentById);
-// module.exports = router;
+router.route("/:id").get(authentication, postComments);
+router.route("/:id").patch(authentication, updateCommentById);
+router.route("/:id").delete(authentication, deleteCommentById);
+module.exports = router;
