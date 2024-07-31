@@ -1,6 +1,4 @@
 const catchAsync = require("../utils/catchAsync");
-const user = require("../db/models/user");
-const comment = require("../db/models/comment");
 const AppError = require("../utils/appError");
 const appSuccess = require("../utils/appSuccess");
 const { commentSchema, updateCommentSchema} = require("../utils/validators/commentValidator");
