@@ -15,20 +15,20 @@ const {
   deletePost,
 } = require("../services/postService");
 
+
 // Create new post
 const createPost = catchAsync(async (req, res, next) => {
-  console.log("Creating post");
   const { error, value } = postSchema.validate(req.body);
   if (error) {
     return next(new AppError(error.details[0].message, 400));
   }
-  console.log("Post created successfully");
   const { categoryId, title, content, readTime, image, thumbnail } = value;
   const { id: userId } = req.user;
   // Create new post using PostService
   const newPost = await createNewPost({ userId,categoryId,title,content,readTime,image,thumbnail,});
   return res.status(201).json(appSuccess("Post created successfully", newPost));
 });
+
 
 //get all posts
 const getPosts = catchAsync(async (req, res, next) => {
@@ -76,6 +76,7 @@ const deletePostById = catchAsync(async (req, res, next) => {
   const deletedPostId = await deletePost({ postId });
   return res.json(appSuccess("Post deleted successfully", deletedPostId));
 });
+
 
 module.exports = {
   createPost,
