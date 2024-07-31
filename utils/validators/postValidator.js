@@ -1,52 +1,51 @@
 const Joi = require("joi");
+const ERROR_MESSAGE = require("../constants");
 
-// Validation schema for user registration
+// Validation schema for creating a post
 const postSchema = Joi.object({
   categoryId: Joi.number().min(1).max(10).required().messages({
-    "number.min": "Category ID must be a positive integer between 1 and 10",
-    "number.max": "Category ID must be a positive integer between 1 and 10",
-    "number.required": "Category ID is required",
+    "number.min": ERROR_MESSAGE.CATEGORY_ID_INVALID,
+    "number.max": ERROR_MESSAGE.CATEGORY_ID_INVALID,
+    "number.required": ERROR_MESSAGE.CATEGORY_ID_INVALID,
   }),
-  
   title: Joi.string().required().messages({
-    "string.empty": "Title is required",
+    "string.empty": ERROR_MESSAGE.TITLE_REQUIRED,
   }),
   content: Joi.string().required().messages({
-    "string.empty": "Content is required",
+    "string.empty": ERROR_MESSAGE.CONTENT_REQUIRED,
   }),
   readTime: Joi.number().min(1).required().messages({
-    "number.min": "Read time must be a positive integer",
-    "number.required": "Read time is required",
+    "number.min": ERROR_MESSAGE.READ_TIME_INVALID,
+    "number.required": ERROR_MESSAGE.READ_TIME_INVALID,
   }),
   image: Joi.string().base64().allow(null, "").messages({
-    "string.base64": "Image must be a valid base64 string",
+    "string.base64": ERROR_MESSAGE.IMAGE_BASE64_INVALID,
   }),
   thumbnail: Joi.string().base64().allow(null, "").messages({
-    "string.base64": "Thumbnail must be a valid base64 string",
+    "string.base64": ERROR_MESSAGE.THUMBNAIL_BASE64_INVALID,
   }),
 });
 
-
-// Validation schema for post-update
+// Validation schema for updating a post
 const updateSchema = Joi.object({
   categoryId: Joi.number().min(1).max(10).messages({
-    "number.min": "Category ID must be a positive integer between 1 and 10",
-    "number.max": "Category ID must be a positive integer between 1 and 10",
+    "number.min": ERROR_MESSAGE.CATEGORY_ID_INVALID,
+    "number.max": ERROR_MESSAGE.CATEGORY_ID_INVALID,
   }),
   title: Joi.string(),
-  content: Joi.string().required(),
+  content: Joi.string(),
   readTime: Joi.number().min(1).messages({
-    "number.min": "Read time must be a positive integer",
+    "number.min": ERROR_MESSAGE.READ_TIME_INVALID,
   }),
   image: Joi.string().base64().allow(null, "").messages({
-    "string.base64": "Image must be a valid base64 string",
+    "string.base64": ERROR_MESSAGE.IMAGE_BASE64_INVALID,
   }),
   thumbnail: Joi.string().base64().allow(null, "").messages({
-    "string.base64": "Thumbnail must be a valid base64 string",
+    "string.base64": ERROR_MESSAGE.THUMBNAIL_BASE64_INVALID,
   }),
 });
 
-
 module.exports = {
-  postSchema, updateSchema
+  postSchema,
+  updateSchema
 };

@@ -1,49 +1,49 @@
 const Joi = require('joi');
+const ERROR_MESSAGE = require('../constants');
 
+// Validation schema for creating a comment
 const commentSchema = Joi.object({
     content: Joi.string()
         .required()
         .messages({
-            'string.base': 'Content must be a string',
-            'string.empty': 'Content cannot be empty',
-            'any.required': 'Content is required'
+            'string.base': ERROR_MESSAGE.CONTENT_STRING_REQUIRED,
+            'string.empty': ERROR_MESSAGE.CONTENT_CANNOT_BE_EMPTY,
+            'any.required': ERROR_MESSAGE.CONTENT_REQUIRED
         }),
-
     parentId: Joi.number()
         .integer()
         .positive()
         .allow(null)
         .messages({
-            'number.base': 'Parent ID must be a number',
-            'number.integer': 'Parent ID must be an integer',
-            'number.positive': 'Parent ID must be a positive number',
-            'any.allowNull': 'Parent ID cannot be null if it is provided'
+            'number.base': ERROR_MESSAGE.PARENT_ID_INVALID,
+            'number.integer': ERROR_MESSAGE.PARENT_ID_INVALID,
+            'number.positive': ERROR_MESSAGE.PARENT_ID_INVALID,
+            'any.allowNull': ERROR_MESSAGE.PARENT_ID_INVALID
         }),
-        
-
     postId: Joi.number()
         .integer()
         .positive()
         .required()
         .messages({
-            'number.base': 'Post ID must be a number',
-            'number.integer': 'Post ID must be an integer',
-            'number.positive': 'Post ID must be a positive number',
-            'any.required': 'Post ID is required'
+            'number.base': ERROR_MESSAGE.POST_ID_REQUIRED,
+            'number.integer': ERROR_MESSAGE.POST_ID_REQUIRED,
+            'number.positive': ERROR_MESSAGE.POST_ID_REQUIRED,
+            'any.required': ERROR_MESSAGE.POST_ID_REQUIRED
         })
 });
 
-
-
+// Validation schema for updating a comment
 const updateCommentSchema = Joi.object({
     content: Joi.string()
         .required()
         .messages({
-            'string.base': 'Content must be a string',
-            'string.empty': 'Content cannot be empty',
-            'any.required': 'Content is required'
+            'string.base': ERROR_MESSAGE.CONTENT_STRING_REQUIRED,
+            'string.empty': ERROR_MESSAGE.CONTENT_CANNOT_BE_EMPTY,
+            'any.required': ERROR_MESSAGE.CONTENT_REQUIRED
         }),
 });
 
-
-module.exports = {commentSchema, updateCommentSchema};
+module.exports = {
+  commentSchema,
+  updateCommentSchema
+};

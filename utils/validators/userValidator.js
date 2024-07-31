@@ -1,59 +1,78 @@
 const Joi = require("joi");
-const { passwordPattern } = require("../constants/passwordPattern");
+const ERROR_MESSAGE = require("../constants");
 
 // Validation schema for user registration
 const userSchema = Joi.object({
   firstName: Joi.string().min(1).max(255).required().messages({
-    "string.empty": "First name is required",
-    "string.min": "First name must be at least 1 character long",
-    "string.max": "First name must be less than 256 characters long",
+    "string.empty": ERROR_MESSAGE.FIRST_NAME_REQUIRED,
+    "string.min": ERROR_MESSAGE.FIRST_NAME_MIN_LENGTH,
+    "string.max": ERROR_MESSAGE.FIRST_NAME_MAX_LENGTH,
   }),
   lastName: Joi.string().min(1).max(255).required().messages({
-    "string.empty": "Last name is required",
-    "string.min": "Last name must be at least 1 character long",
-    "string.max": "Last name must be less than 256 characters long",
+    "string.empty": ERROR_MESSAGE.LAST_NAME_REQUIRED,
+    "string.min": ERROR_MESSAGE.LAST_NAME_MIN_LENGTH,
+    "string.max": ERROR_MESSAGE.LAST_NAME_MAX_LENGTH,
   }),
   email: Joi.string().email().required().messages({
-    "string.email": "Email must be a valid email address",
-    "string.empty": "Email is required",
+    "string.email": ERROR_MESSAGE.EMAIL_INVALID,
+    "string.empty": ERROR_MESSAGE.EMAIL_REQUIRED,
   }),
   password: Joi.string()
     .min(8)
-    .pattern(passwordPattern) 
+    .pattern(PASSWORD_PATTERN.REGEXP) 
     .required()
     .messages({
-      "string.empty": "Password is required",
-      "string.min": "Password must be at least 8 characters long",
-      "string.pattern.base":
-        "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character",
+      "string.empty": ERROR_MESSAGE.PASSWORD_REQUIRED,
+      "string.min": ERROR_MESSAGE.PASSWORD_MIN_LENGTH,
+      "string.pattern.base": ERROR_MESSAGE.PASSWORD_PATTERN_INVALID,
     }),
   confirmPassword: Joi.string().valid(Joi.ref("password")).required().messages({
-    "any.only": "Passwords do not match",
-    "string.empty": "Confirm password is required",
+    "any.only": ERROR_MESSAGE.CONFIRM_PASSWORD_MISMATCH,
+    "string.empty": ERROR_MESSAGE.CONFIRM_PASSWORD_MISMATCH,
   }),
   profilePicture: Joi.string().base64().allow(null, "").messages({
-    "string.base64": "Profile picture must be a valid base64 string",
+    "string.base64": ERROR_MESSAGE.INVALID_IMAGE_FORMAT,
   }),
   thumbnail: Joi.string().base64().allow(null, "").messages({
-    "string.base64": "Thumbnail must be a valid base64 string",
+    "string.base64": ERROR_MESSAGE.INVALID_IMAGE_FORMAT,
   }),
 });
 
-
-
 // Validation schema for user login
-
 const loginSchema = Joi.object({
   email: Joi.string().email().required().messages({
-    "string.email": "Email must be a valid email address",
-    "string.empty": "Email is required",
+    "string.email": ERROR_MESSAGE.EMAIL_INVALID,
+    "string.empty": ERROR_MESSAGE.EMAIL_REQUIRED,
   }),
   password: Joi.string().required().messages({
-    "string.empty": "Password is required",
+    "string.empty": ERROR_MESSAGE.PASSWORD_REQUIRED,
   })
 });
 
+// Validation schema for forgot password
+const forgotPasswordSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    "string.email": ERROR_MESSAGE.EMAIL_INVALID,
+    "string.empty": ERROR_MESSAGE.EMAIL_REQUIRED,
+  })
+});
+
+// Validation schema for reset password
+const resetPasswordSchema = Joi.object({
+  newPassword: Joi.string()
+   .min(8)
+   .pattern(PASSWORD_PATTERN.REGEXP) 
+   .required()
+   .messages({
+      "string.empty": ERROR_MESSAGE.PASSWORD_REQUIRED,
+      "string.min": ERROR_MESSAGE.PASSWORD_MIN_LENGTH,
+      "string.pattern.base": ERROR_MESSAGE.PASSWORD_PATTERN_INVALID,
+    })
+});
 
 module.exports = {
-  userSchema, loginSchema
+  userSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema
 };
