@@ -1,10 +1,11 @@
 const AppError = require('./appError');
+const { STATUS_CODE, ERROR_MESSAGES } = require('../utils/constants');
 
 // Send detailed error information in development
 const sendErrorDev = (error, response) => {
-    const statusCode = error.statusCode || 500;
+    const statusCode = error.statusCode || STATUS_CODE.INTERNAL_SERVER_ERROR;
     const status = error.status || 'error';
-    const message = error.message || 'Something went wrong';
+    const message = error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR;
     const stack = error.stack;
 
     response.status(statusCode).json({
@@ -16,9 +17,9 @@ const sendErrorDev = (error, response) => {
 
 // Send limited error information in production
 const sendErrorProd = (error, response) => {
-    const statusCode = error.statusCode || 500;
+    const statusCode = error.statusCode || STATUS_CODE.INTERNAL_SERVER_ERROR;
     const status = error.status || 'error';
-    const message = error.message || 'Something went wrong';
+    const message = error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR;
 
     if (error.isOperational) {
         return response.status(statusCode).json({
@@ -43,13 +44,13 @@ const sendErrorProd = (error, response) => {
 // Global error handling middleware
 const globalErrorHandler = (err, req, res, next) => {
     if (err.name === 'JsonWebTokenError') {
-        err = new AppError('Invalid token', 401);
+        err = new AppError(ERROR_MESSAGES.INVALID_TOKEN, STATUS_CODE.UNAUTHORIZED);
     }
 
     if (err.name === 'SequelizeUniqueConstraintError') {
-        err = new AppError('Email already registered', 400);
+        err = new AppError(ERROR_MESSAGES.EMAIL_ALREADY_EXISTS, STATUS_CODE.BAD_REQUEST);
     }
-    
+
     if (process.env.NODE_ENV === 'development') {
         return sendErrorDev(err, res);
     }

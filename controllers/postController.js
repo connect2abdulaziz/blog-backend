@@ -5,76 +5,85 @@ const {
   postSchema,
   updateSchema,
 } = require("../utils/validators/postValidator");
+
 const {
-  createPost: createNewPost,
-  getAllPost,
-  getPostDetails,
-  searchPostsByTitleOrTag,
-  getAllMyPosts,
-  updatePost,
-  deletePost,
+  createPostServices,
+  getAllPostServices,
+  getPostServices,
+  searchPostsServices,
+  myPostsServices,
+  updatePostServices,
+  deletePostServices,
 } = require("../services/postService");
+
+const {
+  STATUS_CODE,
+  ERROR_MESSAGES,
+  SUCCESS_MESSAGES,
+} = require("../utils/constants");
 
 
 // Create new post
 const createPost = catchAsync(async (req, res, next) => {
   const { error, value } = postSchema.validate(req.body);
   if (error) {
-    return next(new AppError(error.details[0].message, 400));
+    return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
   }
-  const { categoryId, title, content, readTime, image, thumbnail } = value;
   const { id: userId } = req.user;
-  // Create new post using PostService
-  const newPost = await createNewPost({ userId,categoryId,title,content,readTime,image,thumbnail,});
-  return res.status(201).json(appSuccess("Post created successfully", newPost));
+  const newPost = await createPostServices(userId, value);
+  return res.status(STATUS_CODE.CREATED).json(appSuccess(SUCCESS_MESSAGES.POST_CREATED, newPost));
 });
 
 
-//get all posts
+// Get all posts
 const getPosts = catchAsync(async (req, res, next) => {
-  const posts = await getAllPost();
-  return res.status(200).json(appSuccess("Posts retrieved successfully", posts));
+  const posts = await getAllPostServices();
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.POSTS_RETRIEVED, posts));
 });
 
-// get post by id
+
+// Get post by id
 const getPostById = catchAsync(async (req, res, next) => {
   const { id: postId } = req.params;
-  const result = await getPostDetails(postId);
-  return res.status(200).json(appSuccess("Post retrieved successfully", result));
+  const result = await getPostServices(postId);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.POST_RETRIEVED, result));
 });
 
-//search for posts
+
+// Search for posts
 const searchPosts = catchAsync(async (req, res, next) => {
   const { searchTerm } = req.query;
-  const posts = await searchPostsByTitleOrTag(searchTerm);
-  return res.status(200).json(appSuccess("Posts retrieved successfully", posts));
+  const posts = await searchPostsServices(searchTerm);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.POSTS_RETRIEVED, posts));
 });
 
-//get my posts
+
+// Get my posts
 const getMyPosts = catchAsync(async (req, res, next) => {
-  const { userId } = req.params;
-  const posts = await getAllMyPosts(userId);
-  return res.status(200).json(appSuccess("Posts retrieved successfully", posts));
+  const { id:userId } = req.user;
+  const posts = await myPostsServices(userId);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.POSTS_RETRIEVED, posts));
 });
 
-//update post
+
+// Update post
 const updatePostById = catchAsync(async (req, res, next) => {
   const { error, value } = updateSchema.validate(req.body);
   if (error) {
-    return next(new AppError(error.details[0].message, 400));
+    return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
   }
-  const { categoryId, title, content, readTime, image, thumbnail } = value;
   const { id: userId } = req.user;
   const { id: postId } = req.params;
-  const updatedPost = await updatePost({ postId,userId,categoryId,title,content,readTime,image,thumbnail,});
-  return res.status(200).json(appSuccess("Post updated successfully", updatedPost));
+  const updatedPost = await updatePostServices(postId, userId, value);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.POST_UPDATED, updatedPost));
 });
 
-//delete post
+
+// Delete post
 const deletePostById = catchAsync(async (req, res, next) => {
   const { id: postId } = req.params;
-  const deletedPostId = await deletePost({ postId });
-  return res.json(appSuccess("Post deleted successfully", deletedPostId));
+  const deletedPostId = await deletePostServices({ postId });
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.POST_DELETED, deletedPostId));
 });
 
 

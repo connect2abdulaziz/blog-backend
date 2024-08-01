@@ -1,69 +1,134 @@
-// const { Sequelize } = require('sequelize');
-// const user = require('../db/models/user');
-// const catchAsync = require('../utils/catchAsync');
-// const AppError = require('../utils/appError');
-// const appSuccess = require('../utils/appSuccess');
+const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
+const appSuccess = require("../utils/appSuccess");
+const { 
+  userSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  updateUserSchema,
+  changePasswordSchema,
+ } = require("../utils/validators/userValidator");
+const { 
+  createUserServices,
+  loginUserServices,
+  forgotPasswordServices,
+  resetPasswordServices,
+  verifyEmailServices,
+  getAllUsersServices,
+  getUserByIdServices,  
+  updateUserServices,
+  deleteUserServices,
+  changePasswordServices,
+} = require("../services/userService");
 
-// const getAllUser = catchAsync(async (req, res, next) => {
-//     const users = await user.findAndCountAll({
-//         where: {
-//             userType: {
-//                 [Sequelize.Op.ne]: '0',
-//             },
-//         },
-//         attributes: { exclude: ['password'] },
-//     });
-//     if (!users) {
-//         return next(new AppError('No users found in the database'));
-//     }
-//     return res.status(200).json(appSuccess('Users Retrieved Successfully', users));
+const { STATUS_CODE, SUCCESS_MESSAGES } = require("../utils/constants");
 
-// });
+// Signup Controller
+const signup = catchAsync(async (req, res, next) => {
+  // Validate the input data
+  const { error, value } = userSchema.validate(req.body);
+  if (error) 
+    return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
+  const result = await createUserServices(value);
+  return res.status(STATUS_CODE.CREATED).json(appSuccess(SUCCESS_MESSAGES.USER_CREATED, result));
+});
 
-// //get user by id
-// const getUserById = catchAsync(async (req, res, next) => {
-//     const userId = req.params.id;
-//     const userResponse = await user.findByPk(userId, {
-//         attributes: { exclude: ['password'] },
-//     });
-//     if (!userResponse) {
-//         return next(new AppError('User not found'));
-//     }
-//     return res.status(200).json(appSuccess("User Retrieved Successfully", userResponse));
 
-// });
+// verify the user email
+const verifyEmail = catchAsync(async (req, res, next) => {
+  console.log("verifyEmail");
+  const { token } = req.params;
+  const result = await verifyEmailServices(token);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.EMAIL_VERIFIED, result));
+});
 
-// //delete user
-// const deleteUser = catchAsync(async (req, res, next) => {
 
-//     const userId = req.params.id;
-//     const userResponse = await user.findByPk(userId, {
-//         where : {
-//             userType: {
-//                 [Sequelize.Op.ne]: '0',
-//             },
-//         },
-//     });
-//     if (!userResponse) {
-//         return next(new AppError('User not found'));
-//     }
-//     await userResponse.destroy();
-//     return res.json(appSuccess("User deleted successfully", userId));
-// });
+// Login Controller
+const login = catchAsync(async (req, res, next) => {
+  const { error, value } = loginSchema.validate(req.body);
+  if (error) 
+    return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
+  const token = await loginUserServices(value);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.USER_LOGGED_IN, token));
+});
 
-// // update user 
-// const updateUser = catchAsync(async (req, res, next) => {
-//     const userId = req.params.id;
-//     const {firstName, lastName} = req.body;
-//     const updatedUser = await user.update(
-//         {   firstName, lastName },
-//         { where: { id: userId } }
-//     );
-        
-//     if (!updatedUser) {
-//         return next(new AppError('Fail to update user'));
-//     }
-//     return res.json(appSuccess("User updated successfully", updatedUser));
-// });
 
-// module.exports = { getAllUser, getUserById, deleteUser, updateUser };
+
+// Forgot Password
+const forgotPassword = catchAsync(async (req, res, next) => {
+  const { error, value } = forgotPasswordSchema.validate(req.body);
+  if (error) 
+    return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
+  const result = await forgotPasswordServices(value);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.PASSWORD_RESET_EMAIL_SENT, result));
+});
+
+
+// Reset Password
+const resetPassword = catchAsync(async (req, res, next) => {
+  const { error, value } = resetPasswordSchema.validate(req.body);
+  if (error) 
+    return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
+  const { token } = req.params;
+  const result = await resetPasswordServices(value, token);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS, result));
+});
+
+// Get All Users Controller
+const getAllUsers = catchAsync(async (req, res, next) => {
+  console.log('GET ALL');
+  const users = await getAllUsersServices();
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.USER_FETCHED, users));
+});
+
+// Get User By ID Controller
+const getUserById = catchAsync(async (req, res, next) => {
+  console.log("Getting user by ID");
+  const { id } = req.params;
+  const user = await getUserByIdServices(id);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.USER_FETCHED, user));
+});
+
+
+// Update User Controller
+const updateUser = catchAsync(async (req, res, next) => {
+  const { error, value } = updateUserSchema.validate(req.body);
+  if (error) 
+    return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
+  const {id:userId} = req.user; 
+  const updatedUser = await updateUserServices(userId, value);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.USER_UPDATED, updatedUser));
+});
+
+
+// Delete User Controller
+const deleteUser = catchAsync(async (req, res, next) => {
+  const {id:userId} = req.user; 
+  await deleteUserServices(userId);
+  return res.json(appSuccess(SUCCESS_MESSAGES.USER_DELETED, userId));
+});
+
+// Change Password Controller
+const changePassword = catchAsync(async (req, res, next) => {
+  const { error, value } = changePasswordSchema.validate(req.body);
+  if (error) {
+    return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
+  }
+  const userId = req.user.id; 
+  await changePasswordServices(userId, value);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.PASSWORD_CHANGED));
+});
+
+
+
+// Logout Controller
+const logout = catchAsync(async (req, res, next) => {
+  return res.status(STATUS_CODE.OK).json({
+    status: 'success',
+    message: SUCCESS_MESSAGES.LOGOUT_SUCCESS
+  });
+});
+
+
+module.exports = { signup, verifyEmail, login, forgotPassword, resetPassword, getAllUsers, getUserById, updateUser, deleteUser, changePassword, logout};
