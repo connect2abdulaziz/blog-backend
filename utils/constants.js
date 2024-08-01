@@ -21,15 +21,22 @@ module.exports = {
     INVALID_TOKEN: 'Invalid token',
     MAX_ATTEMPTS_EXCEEDED: 'Too many login attempts. Please try again later.',
     EMAIL_ALREADY_EXISTS: 'Email already exists',
+    EMAIL_ALREADY_VERIFIED: 'Email already verified',
     INVALID_EMAIL_FORMAT: 'Invalid email format',
     INVALID_IMAGE_FORMAT: 'Invalid image format',
     PASSWORD_REQUIRED: 'Password is required',
     PASSWORD_MIN_LENGTH: 'Password must be at least 8 characters long',
     PASSWORD_PATTERN_INVALID: 'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character',
+    INCORRECT_OLD_PASSWORD: 'Old password is incorrect',
     CONFIRM_PASSWORD_MISMATCH: 'Passwords do not match',
     EMAIL_REQUIRED: 'Email is required',
     EMAIL_INVALID: 'Email must be a valid email address',
     EMAIL_ALREADY_EXISTS: 'Email already exists',
+    OLD_PASSWORD_REQUIRED: 'Old password is required',
+    NEW_PASSWORD_REQUIRED: 'New password is required',
+    NEW_PASSWORD_MIN_LENGTH: 'New password must be at least 8 characters long',
+    NEW_PASSWORD_PATTERN_INVALID: 'New password must include at least one uppercase letter, one lowercase letter, one number, and one special character',
+
 
     // Post-related messages
     POST_NOT_FOUND: 'Post not found',
@@ -77,6 +84,12 @@ module.exports = {
     USER_LOGGED_IN: 'User logged in successfully',
     PASSWORD_RESET_EMAIL_SENT: 'Password reset email sent successfully',
     PASSWORD_RESET_SUCCESS: 'Password reset successfully',
+    EMAIL_VERIFIED: 'Email verified successfully',
+    USER_UPDATED: 'User updated successfully',
+    USER_DELETED: 'User deleted successfully',
+    USER_FETCHED: 'Users fetched successfully',
+    PASSWORD_CHANGED: 'Password changed successfully',
+    
 
     // Post-related messages
     POST_CREATED: 'Post created successfully',
@@ -90,6 +103,7 @@ module.exports = {
     COMMENTS_RETRIEVED: 'Comments retrieved successfully',
     COMMENT_UPDATED: 'Comment updated successfully',
     COMMENT_DELETED: 'Comment deleted successfully',
+    REPLIES_RETRIEVED: 'Replies retrieved successfully',
   },
 
   PASSWORD_PATTERN: {

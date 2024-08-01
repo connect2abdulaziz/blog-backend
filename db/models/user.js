@@ -38,6 +38,11 @@ const User = sequelize.define(
       type: DataTypes.TEXT, 
       allowNull: true
     },
+    verified: {
+      allowNull: false,
+      defaultValue: false,
+      type: DataTypes.BOOLEAN,
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,

@@ -70,9 +70,48 @@ const resetPasswordSchema = Joi.object({
     }),
 });
 
+
+const updateUserSchema = Joi.object({
+  firstName: Joi.string().min(1).max(255).messages({
+    "string.empty": ERROR_MESSAGES.FIRST_NAME_REQUIRED,
+    "string.min": ERROR_MESSAGES.FIRST_NAME_MIN_LENGTH,
+    "string.max": ERROR_MESSAGES.FIRST_NAME_MAX_LENGTH,
+  }),
+  lastName: Joi.string().min(1).max(255).messages({
+    "string.empty": ERROR_MESSAGES.LAST_NAME_REQUIRED,
+    "string.min": ERROR_MESSAGES.LAST_NAME_MIN_LENGTH,
+    "string.max": ERROR_MESSAGES.LAST_NAME_MAX_LENGTH,
+  }),
+  profilePicture: Joi.string().base64().allow(null, "").messages({
+    "string.base64": ERROR_MESSAGES.INVALID_IMAGE_FORMAT,
+  }),
+  thumbnail: Joi.string().base64().allow(null, "").messages({
+    "string.base64": ERROR_MESSAGES.INVALID_IMAGE_FORMAT,
+  }),
+});
+
+
+// Validation schema for changing password
+const changePasswordSchema = Joi.object({
+  oldPassword: Joi.string().required().messages({
+    "string.empty": ERROR_MESSAGES.OLD_PASSWORD_REQUIRED,
+  }),
+  newPassword: Joi.string()
+    .min(8)
+    .pattern(PASSWORD_PATTERN.REGEXP)
+    .required()
+    .messages({
+      "string.empty": ERROR_MESSAGES.NEW_PASSWORD_REQUIRED,
+      "string.min": ERROR_MESSAGES.NEW_PASSWORD_MIN_LENGTH,
+      "string.pattern.base": ERROR_MESSAGES.NEW_PASSWORD_PATTERN_INVALID,
+    }),
+});
+
 module.exports = {
   userSchema,
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  updateUserSchema,
+  changePasswordSchema,
 };

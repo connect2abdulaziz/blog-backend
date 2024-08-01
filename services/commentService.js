@@ -93,6 +93,9 @@ const postCommentsServices = async (postId) => {
 
     return hierarchicalComments;
   } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
     throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.BAD_REQUEST);
   }
 };
@@ -111,9 +114,34 @@ const updateCommentServices = async ({ content }, commentId) => {
     });
     return comment;
   } catch (error) {
+    if(error instanceof AppError) {
+        throw error;
+    }
     throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.BAD_REQUEST);
   }
 };
+
+
+// Function to get all replies on a comment
+const getCommentRepliesServices = async (commentId) => {
+    try {
+      console.log(commentId);
+      if (!(await Comment.findByPk(commentId))) {
+        throw new AppError(ERROR_MESSAGES.COMMENT_NOT_FOUND, STATUS_CODE.NOT_FOUND);
+      }
+      const replies = await Comment.findAll({
+        where: {
+          parentId: commentId
+        }
+      });
+      return replies;
+    } catch (error) {
+      if(error instanceof AppError){
+        throw error;
+      }
+      throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    }
+  };
 
 // Delete a comment
 const deleteCommentServices = async (commentId) => {
@@ -125,6 +153,9 @@ const deleteCommentServices = async (commentId) => {
     await comment.destroy();
     return commentId;
   } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
     throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.BAD_REQUEST);
   }
 };
@@ -136,4 +167,5 @@ module.exports = {
   postCommentsServices,
   updateCommentServices,
   deleteCommentServices,
+  getCommentRepliesServices,
 };

@@ -9,6 +9,7 @@ const {
   addCommentServices,
   postCommentsServices,
   updateCommentServices,
+  getCommentRepliesServices,
   deleteCommentServices,
 } = require("../services/commentService");
 
@@ -30,6 +31,13 @@ const postComments = catchAsync(async (req, res, next) => {
   const { id: postId } = req.params;
   const comments = await postCommentsServices(postId);
   return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.COMMENTS_RETRIEVED, comments));
+});
+
+// Get replies on a comment 
+const getCommentReplies = catchAsync(async (req, res, next) => {
+  const {id:commentId} = req.params;
+  const replies = await getCommentRepliesServices(commentId);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.REPLIES_RETRIEVED, replies));
 });
 
 // Update comment
@@ -55,5 +63,6 @@ module.exports = {
   createComment,
   postComments,
   updateCommentById,
+  getCommentReplies,
   deleteCommentById,
 };

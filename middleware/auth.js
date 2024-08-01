@@ -5,13 +5,8 @@ const jwt = require("jsonwebtoken");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const { STATUS_CODE, ERROR_MESSAGES } = require("../utils/constants");
+const { generateToken } = require("../utils/emailUtils");
 
-// Function to generate JWT token
-const generateToken = (payload) => {
-  return jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-};
 
 // Middleware for authentication
 const authentication = catchAsync(async (req, res, next) => {
@@ -37,9 +32,10 @@ const authentication = catchAsync(async (req, res, next) => {
     return next(new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.BAD_REQUEST));
   }
   req.user = freshUser;
-  console.log(req.user);
   return next();
 });
+
+
 
 // Middleware to restrict access to certain user types
 const restrictTo = (...userTypes) => {
