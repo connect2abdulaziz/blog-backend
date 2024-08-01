@@ -5,37 +5,41 @@ const { generateToken } = require("../middleware/auth");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-const ERROR_MESSAGES = require('../constants/errorMessages');
-const STATUS_CODE = require('../constants/statusCode');
+const {ERROR_MESSAGES, STATUS_CODE} = require('../utils/constants');
+
 
 // Create a new user with enhanced error handling
 const createUserServices = async ({ firstName, lastName, email, password }) => {
-  try {
-    const alreadyRegistered = await findByEmail(email);
-    if (alreadyRegistered) {
-      throw new AppError(ERROR_MESSAGES.EMAIL_ALREADY_EXISTS, STATUS_CODE.BAD_REQUEST);
-    }
-    const hashedPassword = await hashPassword(password);
+    try {
+        // Check if the email is already registered
+        const alreadyRegistered = await findByEmail(email);
+        if (alreadyRegistered) {
+            throw new AppError(ERROR_MESSAGES.EMAIL_ALREADY_EXISTS, STATUS_CODE.BAD_REQUEST);
+        }
+        // Hash the password
+        const hashedPassword = await hashPassword(password);
 
-    const newUser = await User.create({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+        // Create a new user
+        const newUser = await User.create({
+            firstName,
+            lastName,
+            email,
+            password: hashedPassword,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
 
-    const result = newUser.toJSON();
-    const { password: pass, ...cleanedResult } = result;
-    cleanedResult.token = generateToken({ id: result.id });
-    return cleanedResult;
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
+        // Process and return user data
+        const result = newUser.toJSON();
+        const { password: pass, profilePicture, thumbnail, ...cleanedResult } = result;
+        cleanedResult.token = generateToken({ id: result.id });
+        return cleanedResult;
+    } catch (error) {
+        if (error instanceof AppError) {
+            throw error; 
+        }
+        throw new AppError('Error creating user', 500); 
     }
-    throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.INTERNAL_SERVER_ERROR);
-  }
 };
 
 // Function to login a user with enhanced error handling
@@ -43,7 +47,7 @@ const loginUserServices = async ({ email, password }) => {
   try {
     const result = await findByEmail(email);
     if (!result || !(await bcrypt.compare(password, result.password))) {
-      throw new AppError(ERROR_MESSAGES.INCORRECT_PASSWORD, STATUS_CODE.BAD_REQUEST);
+      throw new AppError(ERROR_MESSAGES.INCORRECT_EMAIL_OR_PASSWORD, STATUS_CODE.BAD_REQUEST);
     }
     const token = generateToken({ id: result.id });
     return token;
@@ -67,7 +71,7 @@ const forgotPasswordServices = async ({ email }) => {
     const resetToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
 
     // Construct the reset URL
-    const resetUrl = `${process.env.FRONTEND_URL}/api/v1/auth/resetPassword?token=${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/api/v1/user/resetPassword?token=${resetToken}`;
 
     // Send password reset email
     await transporter.sendMail({

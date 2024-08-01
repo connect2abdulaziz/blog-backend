@@ -1,48 +1,61 @@
-const Post = require('../db/models/post'); 
+const Post = require('../db/models/post');
 const User = require('../db/models/user');
 const Category = require('../db/models/category');
 const Comment = require('../db/models/comment');
 const AppError = require('../utils/appError');
-const { Op } = require('sequelize'); 
+const { Op } = require('sequelize');
+const {ERROR_MESSAGES, STATUS_CODE} = require('../utils/constants');
 
 
-const createPost = async ({userId, categoryId, title, content, readTime,  image, thumbnail}) => {
+// Create a new post
+const createPostServices = async (userId, {categoryId, title, content, readTime, image, thumbnail }) => {
   try {
-    const newPost = await Post.create({userId, categoryId, title, content, readTime, image, thumbnail, createdAt: new Date(), updatedAt: new Date()});
+    const newPost = await Post.create({
+      userId,
+      categoryId,
+      title,
+      content,
+      readTime,
+      image,
+      thumbnail,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
     return newPost;
   } catch (error) {
-    throw error;
+    throw new AppError(ERROR_MESSAGES.CONTENT_REQUIRED, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
-
-const getAllPost = async () => {
+// Get all posts with user and category details
+const getAllPostServices = async () => {
   try {
     const posts = await Post.findAll({
       order: [['createdAt', 'DESC']],
       include: [
-        { 
+        {
           model: User,
-          as: 'user', 
-          attributes: ['id', 'firstName', 'lastName', 'thumbnail'] 
+          as: 'user',
+          attributes: ['id', 'firstName', 'lastName', 'thumbnail']
         },
         {
           model: Category,
-          as: 'category', 
+          as: 'category',
           attributes: ['id', 'tag']
         }
       ]
     });
+    if(!posts){
+      throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
+    }
     return posts;
   } catch (error) {
-    throw error;
+    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
-
-
-
-const getPostDetails = async (postId) => {
+// Get details of a specific post by postId
+const getPostServices = async (postId) => {
   try {
     const post = await Post.findByPk(postId, {
       include: [
@@ -72,18 +85,21 @@ const getPostDetails = async (postId) => {
     });
 
     if (!post) {
-      throw new AppError('Post not found', 404);
+      console.log('No post found');
+      throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
 
     return post;
   } catch (error) {
-    throw error;
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
-
-
-const searchPostsByTitleOrTag = async (searchTerm) => {
+// Search posts by title or category tag
+const searchPostsServices = async (searchTerm) => {
   try {
     const posts = await Post.findAll({
       include: [
@@ -112,12 +128,15 @@ const searchPostsByTitleOrTag = async (searchTerm) => {
 
     return posts;
   } catch (error) {
-    throw error;
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
-
-const getAllMyPosts = async (userId) => {
+// Get all posts created by a specific user
+const myPostsServices = async (userId) => {
   try {
     const posts = await Post.findAll({
       where: { userId },
@@ -135,13 +154,20 @@ const getAllMyPosts = async (userId) => {
       ],
       order: [['createdAt', 'DESC']]
     });
+    if(!posts){
+      throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
+    }
     return posts;
   } catch (error) {
-    throw error;
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
-}
+};
 
-const updatePost = async ({ postId, userId, categoryId, title, content, readTime, image, thumbnail }) => {
+// Update an existing post
+const updatePostServices = async (postId, userId, {categoryId, title, content, readTime, image, thumbnail }) => {
   try {
     const [affectedRows] = await Post.update({
       userId,
@@ -151,31 +177,46 @@ const updatePost = async ({ postId, userId, categoryId, title, content, readTime
       readTime,
       image,
       thumbnail,
-      updatedAt: new Date() 
+      updatedAt: new Date()
     }, {
-      where: { id: postId } 
+      where: { id: postId }
     });
 
-    if (affectedRows === 0) {
-      throw new AppError('Post not found or no changes made', 404);
+    if (!affectedRows) {
+      throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
     const updatedPost = await Post.findByPk(postId);
     return updatedPost;
   } catch (error) {
-    throw error;
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(ERROR_MESSAGES.POST_UPDATE_FAILED, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
-const deletePost = async ({ postId}) => {
+// Delete a post
+const deletePostServices = async ({ postId }) => {
   try {
     const affectedRows = await Post.destroy({ where: { id: postId } });
-    if (affectedRows === 0) {
-      throw new AppError('Post not found', 404);
+    if (!affectedRows) {
+      throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
     return postId;
   } catch (error) {
-    throw error;
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(ERROR_MESSAGES.POST_DELETION_FAILED, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
-}
-module.exports = { createPost, getAllPost, getPostDetails, searchPostsByTitleOrTag, getAllMyPosts, updatePost, deletePost};
+};
 
+module.exports = {
+  createPostServices,
+  getAllPostServices,
+  getPostServices,
+  searchPostsServices,
+  myPostsServices,
+  updatePostServices,
+  deletePostServices   
+};

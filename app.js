@@ -1,34 +1,30 @@
 require("dotenv").config({ path: `${process.cwd()}/.env` });
-const sequelize = require("./config/database");
-
 const express = require("express");
 const app = express();
+const sequelize = require("./config/database");
 
 const catchAsync = require("./utils/catchAsync");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./utils/errorHandler");
+const { STATUS_CODE } = require("./utils/constants");
 
-const authRouter = require("./routes/authRoute");
+const userRouter = require("./routes/userRoute");
 const postRouter = require('./routes/postRoute');
-//const userRouter = require('./routes/userRoute');
 const commentRouter = require('./routes/commentRoute');
 
 app.use(express.json());
 
-// all routes
-app.use("/api/v1/auth", authRouter);
+// Define routes
+app.use("/api/v1/users", userRouter);
 app.use('/api/v1/posts', postRouter);
-//app.use('/api/v1/users', userRouter);
 app.use('/api/v1/comments', commentRouter);
 
-app.use(
-  "*",
-  catchAsync(async (err, req, res) => {
-    throw new AppError(`Can't find ${req.originalUrl} on the server`, 404);
-  })
-);
+// Handle undefined routes
+app.all("*", catchAsync(async (req, res, next) => {
+  return next(new AppError(`Can't find ${req.originalUrl} on this server`, STATUS_CODE.NOT_FOUND));
+}));
 
-//Global error handler
+// Global error handler
 app.use(globalErrorHandler);
 
 const PORT = process.env.APP_PORT || 4000;

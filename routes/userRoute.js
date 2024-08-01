@@ -1,19 +1,11 @@
-// const { authentication, restrictTo } = require("../controllers/authController");
-// const {
-//   getAllUser,
-//   getUserById,
-//   deleteUser,
-//   updateUser,
-// } = require("../controllers/userController");
+const { signup, login , forgotPassword, resetPassword} = require("../controllers/userController");
+const { authentication } = require("../middleware/auth");
+const router = require("express").Router();
 
-// const router = require("express").Router();
+router.route("/signup").post(signup);
 
-// router.route("/").get(authentication, restrictTo("0"), getAllUser);
+router.route("/login").post(authentication, login);
+router.route('/forgotPassword').post(forgotPassword);
+router.route('/resetPassword/:token').post(resetPassword);
 
-// router
-//   .route("/:id")
-//   .get(authentication, getUserById)
-//   .delete(authentication, restrictTo("0", "1"), deleteUser)
-//   .patch(authentication, restrictTo("1"), updateUser);
-
-// module.exports = router;
+module.exports = router;

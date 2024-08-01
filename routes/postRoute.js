@@ -12,7 +12,7 @@ const { authentication } = require("../middleware/auth");
 
 router.route("/").post(authentication, createPost);
 router.route("/").get(getPosts);
-router.route("/:userId").get(authentication, getMyPosts);
+router.route("/:id/my-posts").get(authentication, getMyPosts);
 
 router.route("/:id").get(getPostById);
 router.route("/:id/search").get(searchPosts);
