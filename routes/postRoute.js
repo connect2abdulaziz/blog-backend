@@ -15,6 +15,7 @@ router.route("/").get(getPosts);
 router.route("/:id/my-posts").get(authentication, getMyPosts);
 
 router.route("/:id").get(getPostById);
+//TODO: handle it in getPosts method when it's available
 router.route("/:id/search").get(searchPosts);
 router.route("/:id").patch(authentication, updatePostById);
 router.route("/:id").delete(authentication, deletePostById);

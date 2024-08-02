@@ -1,8 +1,8 @@
 const Comment = require("../db/models/comment");
 const User = require("../db/models/user");
 const Post = require("../db/models/post");
-const AppError = require("../utils/appError");
-const {ERROR_MESSAGES, STATUS_CODE} = require("../utils/constants");
+const AppError = require("../utils/errors/appError");
+const {ERROR_MESSAGES, STATUS_CODE} = require("../utils/constants/constants");
 
 
 // Add a new comment to a post

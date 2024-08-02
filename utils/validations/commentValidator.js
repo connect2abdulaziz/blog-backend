@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const {ERROR_MESSAGES} = require("../constants");
+const {ERROR_MESSAGES} = require("../constants/constants");
 
 // Validation schema for creating a comment
 const commentSchema = Joi.object({

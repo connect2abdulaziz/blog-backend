@@ -1,5 +1,5 @@
 const AppError = require('./appError');
-const { STATUS_CODE, ERROR_MESSAGES } = require('../utils/constants');
+const { STATUS_CODE, ERROR_MESSAGES } = require('../constants/constants');
 
 // Send detailed error information in development
 const sendErrorDev = (error, response) => {

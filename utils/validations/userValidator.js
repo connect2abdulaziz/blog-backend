@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const { ERROR_MESSAGES , PASSWORD_PATTERN} = require("../constants");
+const { ERROR_MESSAGES, PASSWORD_PATTERN } = require("../constants/constants");
 
 // Validation schema for user registration
 const userSchema = Joi.object({
@@ -70,7 +70,6 @@ const resetPasswordSchema = Joi.object({
     }),
 });
 
-
 const updateUserSchema = Joi.object({
   firstName: Joi.string().min(1).max(255).messages({
     "string.empty": ERROR_MESSAGES.FIRST_NAME_REQUIRED,
@@ -89,7 +88,6 @@ const updateUserSchema = Joi.object({
     "string.base64": ERROR_MESSAGES.INVALID_IMAGE_FORMAT,
   }),
 });
-
 
 // Validation schema for changing password
 const changePasswordSchema = Joi.object({
