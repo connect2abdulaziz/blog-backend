@@ -101,13 +101,15 @@ const postCommentsServices = async (postId) => {
 };
 
 // Update an existing comment
-const updateCommentServices = async ({ content }, commentId) => {
+const updateCommentServices = async ({ content }, {commentId, userId}) => {
   try {
     const comment = await Comment.findByPk(commentId);
     if (!comment) {
       throw new AppError(ERROR_MESSAGES.COMMENT_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
-
+    if (comment.userId !== userId) {
+      throw new AppError(ERROR_MESSAGES.UNAUTHORIZED, STATUS_CODE.UNAUTHORIZED);
+    }
     await comment.update({
       content,
       updatedAt: new Date(),
@@ -125,8 +127,8 @@ const updateCommentServices = async ({ content }, commentId) => {
 // Function to get all replies on a comment
 const getCommentRepliesServices = async (commentId) => {
     try {
-      console.log(commentId);
-      if (!(await Comment.findByPk(commentId))) {
+      const comment = await Comment.findByPk(commentId);
+      if (!comment) {
         throw new AppError(ERROR_MESSAGES.COMMENT_NOT_FOUND, STATUS_CODE.NOT_FOUND);
       }
       const replies = await Comment.findAll({
@@ -144,11 +146,14 @@ const getCommentRepliesServices = async (commentId) => {
   };
 
 // Delete a comment
-const deleteCommentServices = async (commentId) => {
+const deleteCommentServices = async ({commentId, userId}) => {
   try {
     const comment = await Comment.findByPk(commentId);
     if (!comment) {
       throw new AppError(ERROR_MESSAGES.COMMENT_NOT_FOUND, STATUS_CODE.NOT_FOUND);
+    }
+    if (comment.userId!== userId) {
+      throw new AppError(ERROR_MESSAGES.UNAUTHORIZED, STATUS_CODE.UNAUTHORIZED);
     }
     await comment.destroy();
     return commentId;

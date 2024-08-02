@@ -169,8 +169,15 @@ const myPostsServices = async (userId) => {
 // Update an existing post
 const updatePostServices = async (postId, userId, {categoryId, title, content, readTime, image, thumbnail }) => {
   try {
-    const [affectedRows] = await Post.update({
-      userId,
+    
+    const post = await Post.findByPk(postId);
+    if (!post) {
+      throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
+    }
+    if( post.userId !== userId){
+      throw new AppError(ERROR_MESSAGES.UNAUTHORIZED, STATUS_CODE.UNAUTHORIZED);
+    }
+    await Post.update({
       categoryId,
       title,
       content,
@@ -179,14 +186,10 @@ const updatePostServices = async (postId, userId, {categoryId, title, content, r
       thumbnail,
       updatedAt: new Date()
     }, {
-      where: { id: postId }
+      where: { id: postId, userId }
     });
-
-    if (!affectedRows) {
-      throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
-    }
     const updatedPost = await Post.findByPk(postId);
-    return updatedPost;
+    return {post, updatedPost};
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -196,12 +199,16 @@ const updatePostServices = async (postId, userId, {categoryId, title, content, r
 };
 
 // Delete a post
-const deletePostServices = async ({ postId }) => {
+const deletePostServices = async ({ postId, userId}) => {
   try {
-    const affectedRows = await Post.destroy({ where: { id: postId } });
-    if (!affectedRows) {
+    const post = await Post.findByPk(postId);
+    if (!post) {
       throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
+    if( post.userId!== userId){
+      throw new AppError(ERROR_MESSAGES.UNAUTHORIZED, STATUS_CODE.UNAUTHORIZED);
+    }
+    await Post.destroy({ where: { id: postId, userId} });
     return postId;
   } catch (error) {
     if (error instanceof AppError) {

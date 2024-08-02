@@ -43,19 +43,21 @@ const getCommentReplies = catchAsync(async (req, res, next) => {
 // Update comment
 const updateCommentById = catchAsync(async (req, res, next) => {
   const { id: commentId } = req.params;
+  const { id: userId } = req.user;
   const { content } = req.body;
   const { error, value } = updateCommentSchema.validate({ content });
   if (error) {
     return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
   }
-  const updatedComment = await updateCommentServices(value, commentId);
+  const updatedComment = await updateCommentServices(value, commentId, userId);
   return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.COMMENT_UPDATED, updatedComment));
 });
 
 // Delete comment
 const deleteCommentById = catchAsync(async (req, res, next) => {
   const { id: commentId } = req.params;
-  const deletedComment = await deleteCommentServices(commentId);
+  const { id: userId } = req.user;
+  const deletedComment = await deleteCommentServices({commentId, userId});
   return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.COMMENT_DELETED, deletedComment));
 });
 

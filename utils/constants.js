@@ -36,6 +36,7 @@ module.exports = {
     NEW_PASSWORD_REQUIRED: 'New password is required',
     NEW_PASSWORD_MIN_LENGTH: 'New password must be at least 8 characters long',
     NEW_PASSWORD_PATTERN_INVALID: 'New password must include at least one uppercase letter, one lowercase letter, one number, and one special character',
+    UNAUTHORIZED: 'User not authorized to perform this action',
 
 
     // Post-related messages
@@ -89,6 +90,7 @@ module.exports = {
     USER_DELETED: 'User deleted successfully',
     USER_FETCHED: 'Users fetched successfully',
     PASSWORD_CHANGED: 'Password changed successfully',
+   
     
 
     // Post-related messages

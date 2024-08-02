@@ -82,7 +82,8 @@ const updatePostById = catchAsync(async (req, res, next) => {
 // Delete post
 const deletePostById = catchAsync(async (req, res, next) => {
   const { id: postId } = req.params;
-  const deletedPostId = await deletePostServices({ postId });
+  const { id: userId } = req.user;
+  const deletedPostId = await deletePostServices({ postId, userId });
   return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.POST_DELETED, deletedPostId));
 });
 

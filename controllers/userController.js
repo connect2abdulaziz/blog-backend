@@ -115,7 +115,7 @@ const changePassword = catchAsync(async (req, res, next) => {
   if (error) {
     return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
   }
-  const userId = req.user.id; 
+  const {id:userId} = req.user; 
   await changePasswordServices(userId, value);
   return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.PASSWORD_CHANGED));
 });

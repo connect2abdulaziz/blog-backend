@@ -68,7 +68,6 @@ const verifyEmailServices = async (token) => {
   
       // Find the user by the decoded ID
       const user = await User.findByPk(decoded.userId);
-      console.log(user);
       if (!user) {
         throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.NOT_FOUND);
       }
@@ -120,7 +119,7 @@ const forgotPasswordServices = async ({ email }) => {
     const resetToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: '5m' });
 
     // Construct the reset URL
-    const resetUrl = `${process.env.FRONTEND_URL}/api/v1/user/resetPassword?token=${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/api/v1/user/reset-password?token=${resetToken}`;
 
     // Send password reset email
     await transporter.sendMail({

@@ -16,7 +16,7 @@ const {
   
   // User routes
   router.route("/signup").post(signup);
-  router.route("/login").post(authentication, login);
+  router.route("/login").post(login);
   router.route("/forgot-password").post(forgotPassword);
   router.route("/reset-password/:token").post(resetPassword);
   router.route("/verify-email/:token").post(verifyEmail); 
