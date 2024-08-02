@@ -19,6 +19,11 @@ The project is organized in the following structure:
 
 ```
 app.js
+|
+|
+├── config
+|   ├── config.js
+|   └── database.js
 │
 ├── routes
 │   ├── postRoutes.js
@@ -49,13 +54,22 @@ app.js
 │   │   └── [seeder files]
 │
 ├── middleware
-│   └── authUtils.js
+│   └── auth.js
 │
 └── utils
-    └── validators
-        ├── postValidator.js
-        ├── userValidator.js
-        └── commentValidator.js
+│    └── validators
+│       ├── postValidator.js
+│       ├── userValidator.js
+│       └── commentValidator.js
+│    ├── appError.js
+│    ├── appSuccess.js
+│    ├── catchAsync.js
+│    ├── constants.js
+│    ├── emailUtils.js
+│    ├── errorHandler.js
+└─── └── hashPasswordUtils.js
+
+
 ```
 
 ## Features
@@ -109,34 +123,52 @@ app.js
    npm start
    ```
 
-## API Endpoints
 
-### User Routes
+
+
+Here’s the updated API documentation with the routes you provided, properly structured for each resource (User, Post, Comment) and with the newly added routes included:
+
+### API Endpoints
+
+#### User Routes
 
 - `POST /api/v1/users/signup`: Register a new user
 - `POST /api/v1/users/login`: Login a user
+- `POST /api/v1/users/forgot-password`: Request a password reset
+- `POST /api/v1/users/reset-password/:token`: Reset password using the token
+- `POST /api/v1/users/verify-email/:token`: Verify email address using the token
+- `GET /api/v1/users`: Get all users (Protected)
+- `GET /api/v1/users/:id`: Get user by ID (Protected)
+- `PATCH /api/v1/users/update`: Update the currently authenticated user's details (Protected)
+- `DELETE /api/v1/users/delete`: Delete the currently authenticated user (Protected)
+- `PATCH /api/v1/users/change-password`: Change the password of the currently authenticated user (Protected)
+- `POST /api/v1/users/logout`: Logout the currently authenticated user (Protected)
 
-### Post Routes
+#### Post Routes
 
-- `POST /api/v1/posts`: Create a new post
+- `POST /api/v1/posts`: Create a new post (Protected)
 - `GET /api/v1/posts`: Get all posts
 - `GET /api/v1/posts/:id`: Get a post by ID
-- `PUT /api/v1/posts/:id`: Update a post by ID
-- `DELETE /api/v1/posts/:id`: Delete a post by ID
+- `PUT /api/v1/posts/:id`: Update a post by ID (Protected)
+- `DELETE /api/v1/posts/:id`: Delete a post by ID (Protected)
 - `GET /api/v1/posts/search`: Search posts by title or category tag
+- `GET /api/v1/posts/:id/my-posts`: Get posts created by the currently authenticated user (Protected)
 
-### Comment Routes
+#### Comment Routes
 
-- `POST /api/v1/comments`: Add a new comment to a post
+- `POST /api/v1/comments`: Add a new comment to a post (Protected)
 - `GET /api/v1/comments/:postId`: Get all comments for a specific post
+- `GET /api/v1/comments/:id/replies`: Get all replies for a specific comment (Protected)
+- `PATCH /api/v1/comments/:id`: Update a comment by ID (Protected)
+- `DELETE /api/v1/comments/:id`: Delete a comment by ID (Protected)
 
 ## Validation
 
 The application uses Joi for input validation in the following areas:
 
-- User registration and login
+- User registration, login, change password, reset password, update user
 - Post creation and updates
-- Comment creation
+- Comment creation and updates
 
 ## Authentication
 
