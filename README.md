@@ -26,6 +26,7 @@ app.js
 |   └── database.js
 │
 ├── routes
+│   ├── index.js
 │   ├── postRoutes.js
 │   ├── userRoutes.js
 │   └── commentRoutes.js
@@ -58,16 +59,19 @@ app.js
 │
 └── utils
 │    └── validators
-│       ├── postValidator.js
-│       ├── userValidator.js
-│       └── commentValidator.js
-│    ├── appError.js
-│    ├── appSuccess.js
-│    ├── catchAsync.js
-│    ├── constants.js
-│    ├── emailUtils.js
-│    ├── errorHandler.js
-└─── └── hashPasswordUtils.js
+│        ├── postValidator.js
+│        ├── userValidator.js
+│        └── commentValidator.js
+│    └── constants
+│        └── constants.js  
+│    └── errors     
+│        ├── appSuccess.js
+│        ├── catchAsync.js
+│        └── appError.js
+│    └── helpers
+│        ├── emailUtils.js
+│        ├── errorHandler.js
+└────────└── hashPasswordUtils.js
 
 
 ```
@@ -147,11 +151,10 @@ Here’s the updated API documentation with the routes you provided, properly st
 #### Post Routes
 
 - `POST /api/v1/posts`: Create a new post (Protected)
-- `GET /api/v1/posts`: Get all posts
+- `GET /api/v1/posts`: Get all posts, including search results 
 - `GET /api/v1/posts/:id`: Get a post by ID
 - `PUT /api/v1/posts/:id`: Update a post by ID (Protected)
 - `DELETE /api/v1/posts/:id`: Delete a post by ID (Protected)
-- `GET /api/v1/posts/search`: Search posts by title or category tag
 - `GET /api/v1/posts/:id/my-posts`: Get posts created by the currently authenticated user (Protected)
 
 #### Comment Routes
@@ -184,6 +187,6 @@ Feel free to fork the repository and submit pull requests. If you encounter any 
 
 ## Contact
 
-For any questions or feedback, you can reach me at [LinkedIn](https://www.linkedin.com/in/connect2abdulaziz).
+For any questions or feedback, you can reach me at [LinkedIn](https://www.linkedin.com/in/connect2abdulaziz) and [Portfolio](https://connect2abdulaziz.github.io/abdulaziz/).
 
 
