@@ -20,7 +20,6 @@ const createPostServices = async (
       readTime,
       image,
       thumbnail,
-      createdAt: new Date(),
     });
     return newPost;
   } catch (error) {

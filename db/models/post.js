@@ -64,7 +64,7 @@ const Post = sequelize.define(
     sequelize,
     tableName: 'post',
     freezeTableName: true,
-    timestamps: false, 
+    timestamps: true, 
     modelName: 'post',
   }
 );

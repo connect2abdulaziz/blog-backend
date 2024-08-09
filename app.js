@@ -6,8 +6,16 @@ const catchAsync = require("./utils/errors/catchAsync");
 const AppError = require("./utils/errors/appError");
 const globalErrorHandler = require("./utils/errors/errorHandler");
 const { STATUS_CODE } = require("./utils/constants/constants");
+const cors = require('cors');
 
 app.use(express.json());
+
+// Use CORS middleware
+app.use(cors({
+  origin: process.env.FRONTEND_URL, 
+  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], 
+  allowedHeaders: ['Content-Type', 'Authorization'], 
+}));
 
 // Mount API routes on "/api/v1"
 app.use("/api/v1", appRouter);
