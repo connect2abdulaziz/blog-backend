@@ -12,6 +12,7 @@ This project is a Blog Website application that allows users to create, update, 
 - **Authentication**: JWT (JSON Web Tokens)
 - **Password Security**: bcrypt
 - **Validation**: Joi
+- **Testing**: Swagger
 
 ## Project Structure
 
