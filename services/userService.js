@@ -25,7 +25,6 @@ const createUserServices = async ({ firstName, lastName, email, password }) => {
       email,
       password: hashedPassword,
       verified: false,
-      createdAt: new Date(),
     });
 
     // Send a verification email
@@ -284,7 +283,7 @@ const deleteUserServices = async (userId) => {
 };
 
 // Update User Password Service
-const changePasswordServices = async (userId, { oldPassword, newPassword }) => {
+const changePasswordServices = async (userId, { currentPassword, newPassword }) => {
   try {
     // Find the user
     const user = await User.findByPk(userId);
@@ -293,7 +292,7 @@ const changePasswordServices = async (userId, { oldPassword, newPassword }) => {
     }
 
     // Verify old password
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       throw new AppError(
         ERROR_MESSAGES.INCORRECT_OLD_PASSWORD,

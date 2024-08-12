@@ -91,7 +91,7 @@ const updateUserSchema = Joi.object({
 
 // Validation schema for changing password
 const changePasswordSchema = Joi.object({
-  oldPassword: Joi.string().required().messages({
+  currentPassword: Joi.string().required().messages({
     "string.empty": ERROR_MESSAGES.OLD_PASSWORD_REQUIRED,
   }),
   newPassword: Joi.string()

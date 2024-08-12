@@ -6,7 +6,10 @@ const catchAsync = require("./utils/errors/catchAsync");
 const AppError = require("./utils/errors/appError");
 const globalErrorHandler = require("./utils/errors/errorHandler");
 const { STATUS_CODE } = require("./utils/constants/constants");
+const swaggerUi = require("swagger-ui-express")
+const YAML = require("yamljs");
 const cors = require('cors');
+const swaggerDocument = YAML.load('./swagger.yaml');
 
 app.use(express.json());
 
@@ -16,6 +19,8 @@ app.use(cors({
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], 
   allowedHeaders: ['Content-Type', 'Authorization'], 
 }));
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Mount API routes on "/api/v1"
 app.use("/api/v1", appRouter);
@@ -30,7 +35,8 @@ app.use(globalErrorHandler);
 
 const PORT = process.env.APP_PORT || 4000;
 app.listen(PORT, async () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port http://localhost:${PORT}`);
+  console.log(`Swagger docs available at http://localhost:${PORT}/api-docs`);
   try {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");

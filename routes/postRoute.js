@@ -3,20 +3,18 @@ const {
   createPost,
   getPosts,
   getPostById,
-  searchPosts,
-  getMyPosts,
   updatePostById,
   deletePostById,
 } = require("../controllers/postController");
 const { authentication } = require("../middleware/auth");
 
-router.route("/").post(authentication, createPost);
+// get all posts and create new ones
 router.route("/").get(getPosts);
-router.route("/:id/my-posts").get(authentication, getMyPosts);
-
 router.route("/:id").get(getPostById);
-//TODO: handle it in getPosts method when it's available
-router.route("/:id/search").get(searchPosts);
+
+//protected
+router.route("/").post(authentication, createPost);
+router.route("/:id/my-posts").get(authentication, getPosts);
 router.route("/:id").patch(authentication, updatePostById);
 router.route("/:id").delete(authentication, deletePostById);
 module.exports = router;

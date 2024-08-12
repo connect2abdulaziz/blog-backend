@@ -30,10 +30,10 @@ const createPostServices = async (
   }
 };
 
-// Get all posts with user and category details
-const getAllPostServices = async () => {
+const getAllPostServices = async (searchBy, userId) => {
   try {
-    const posts = await Post.findAll({
+    // Define the base query options
+    const queryOptions = {
       order: [["createdAt", "DESC"]],
       include: [
         {
@@ -47,18 +47,48 @@ const getAllPostServices = async () => {
           attributes: ["id", "tag"],
         },
       ],
-    });
-    if (!posts) {
-      throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
+    };
+
+    // Initialize where clause
+    queryOptions.where = {};
+
+    // If userId is provided, add the userId condition to the query
+    if (userId) {
+      queryOptions.where.userId = userId;
     }
-    return posts;
+
+    // If a search term is provided, add the search condition to the query
+    if (searchBy) {
+      queryOptions.where[Op.or] = [
+        {
+          title: {
+            [Op.iLike]: `%${searchBy}%`,
+          },
+        },
+        {
+          "$category.tag$": {
+            [Op.iLike]: `%${searchBy}%`,
+          },
+        },
+      ];
+    }
+
+    // Execute the query with the constructed options and include the count
+    const { count, rows: posts } = await Post.findAndCountAll(queryOptions);
+    return { count, posts };
   } catch (error) {
+    if( error instanceof AppError ) {
+      throw error;
+    }
     throw new AppError(
       ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
       STATUS_CODE.INTERNAL_SERVER_ERROR
     );
   }
 };
+
+
+
 
 // Get details of a specific post by postId
 const getPostServices = async (postId) => {
@@ -107,45 +137,7 @@ const getPostServices = async (postId) => {
   }
 };
 
-// Search posts by title or category tag
-const searchPostsServices = async (searchTerm) => {
-  try {
-    const posts = await Post.findAll({
-      include: [
-        {
-          model: Category,
-          as: "category",
-          attributes: ["id", "tag"],
-        },
-      ],
-      where: {
-        [Op.or]: [
-          {
-            title: {
-              [Op.iLike]: `%${searchTerm}%`,
-            },
-          },
-          {
-            "$category.tag$": {
-              [Op.iLike]: `%${searchTerm}%`,
-            },
-          },
-        ],
-      },
-      order: [["createdAt", "DESC"]],
-    });
 
-    return posts;
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    throw new AppError(
-      ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
-      STATUS_CODE.INTERNAL_SERVER_ERROR
-    );
-  }
-};
 
 // Get all posts created by a specific user
 const myPostsServices = async (userId) => {
@@ -249,7 +241,6 @@ module.exports = {
   createPostServices,
   getAllPostServices,
   getPostServices,
-  searchPostsServices,
   myPostsServices,
   updatePostServices,
   deletePostServices,

@@ -10,8 +10,6 @@ const {
   createPostServices,
   getAllPostServices,
   getPostServices,
-  searchPostsServices,
-  myPostsServices,
   updatePostServices,
   deletePostServices,
 } = require("../services/postService");
@@ -39,7 +37,10 @@ const createPost = catchAsync(async (req, res, next) => {
 
 // Get all posts
 const getPosts = catchAsync(async (req, res, next) => {
-  const posts = await getAllPostServices();
+  const {searchBy} = req.query 
+  const {id:userId} = req.user || {id:null};
+  console.log(userId, searchBy);
+  const posts = await getAllPostServices(searchBy, userId);
   return res
     .status(STATUS_CODE.OK)
     .json(appSuccess(SUCCESS_MESSAGES.POSTS_RETRIEVED, posts));
@@ -54,23 +55,8 @@ const getPostById = catchAsync(async (req, res, next) => {
     .json(appSuccess(SUCCESS_MESSAGES.POST_RETRIEVED, result));
 });
 
-// Search for posts
-const searchPosts = catchAsync(async (req, res, next) => {
-  const { searchTerm } = req.query;
-  const posts = await searchPostsServices(searchTerm);
-  return res
-    .status(STATUS_CODE.OK)
-    .json(appSuccess(SUCCESS_MESSAGES.POSTS_RETRIEVED, posts));
-});
 
-// Get my posts
-const getMyPosts = catchAsync(async (req, res, next) => {
-  const { id: userId } = req.user;
-  const posts = await myPostsServices(userId);
-  return res
-    .status(STATUS_CODE.OK)
-    .json(appSuccess(SUCCESS_MESSAGES.POSTS_RETRIEVED, posts));
-});
+
 
 // Update post
 const updatePostById = catchAsync(async (req, res, next) => {
@@ -102,8 +88,6 @@ module.exports = {
   createPost,
   getPosts,
   getPostById,
-  searchPosts,
-  getMyPosts,
   updatePostById,
   deletePostById,
 };
