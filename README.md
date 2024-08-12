@@ -1,8 +1,8 @@
-# Blog Website
+# Blog Website Backend NodeJs
 
 ## Overview
 
-This project is a Blog Website application that allows users to create, update, and manage blog posts. It includes features such as user authentication, category management, and comments on posts. The application is built using Node.js and Express.js, with Sequelize for ORM and PostgreSQL as the database.
+This project is a fully functional Blog Website application that enables users to create, manage, and interact with blog posts. The application provides robust features such as user authentication, category management, comment functionality, and comprehensive API documentation through Swagger.
 
 ## Technologies Used
 
@@ -12,182 +12,221 @@ This project is a Blog Website application that allows users to create, update, 
 - **Authentication**: JWT (JSON Web Tokens)
 - **Password Security**: bcrypt
 - **Validation**: Joi
-- **Testing**: Swagger
+- **API Documentation**: Swagger
 
 ## Project Structure
 
-The project is organized in the following structure:
+The project is organized following best practices to maintain scalability and ease of maintenance:
 
-```
+```bash
 app.js
-|
-|
 ├── config
-|   ├── config.js
-|   └── database.js
-│
+│   ├── config.js
+│   └── database.js
 ├── routes
 │   ├── index.js
 │   ├── postRoutes.js
 │   ├── userRoutes.js
 │   └── commentRoutes.js
-│
 ├── controllers
 │   ├── postController.js
 │   ├── userController.js
 │   └── commentController.js
-│
 ├── services
 │   ├── postService.js
 │   ├── userService.js
 │   └── commentService.js
-│
 ├── db
 │   ├── models
 │   │   ├── post.js
 │   │   ├── user.js
 │   │   ├── comment.js
 │   │   └── category.js
-│   │
 │   ├── migrations
-│   │   └── [migration files]
-│   │
-│   ├── seeders
-│   │   └── [seeder files]
-│
+│   └── seeders
 ├── middleware
 │   └── auth.js
-│
 └── utils
-│    └── validators
-│        ├── postValidator.js
-│        ├── userValidator.js
-│        └── commentValidator.js
-│    └── constants
-│        └── constants.js  
-│    └── errors     
-│        ├── appSuccess.js
-│        ├── catchAsync.js
-│        └── appError.js
-│    └── helpers
-│        ├── emailUtils.js
-│        ├── errorHandler.js
-└────────└── hashPasswordUtils.js
-
-
+    ├── validators
+    │   ├── postValidator.js
+    │   ├── userValidator.js
+    │   └── commentValidator.js
+    ├── constants
+    │   └── constants.js  
+    ├── errors     
+    │   ├── appSuccess.js
+    │   ├── catchAsync.js
+    │   └── appError.js
+    ├── helpers
+        ├── emailUtils.js
+        ├── errorHandler.js
+        └── hashPasswordUtils.js
 ```
 
 ## Features
 
-- **User Authentication**: Register, login, and authenticate users using JWT.
-- **Post Management**: Create, read, update, and delete blog posts.
-- **Category Management**: Assign and manage categories for posts.
-- **Comment Management**: Add and manage comments on posts.
-- **Search Functionality**: Search posts by title or category tag.
+- **User Authentication**: Secure user registration, login, and JWT-based authentication.
+- **Post Management**: Full CRUD operations for blog posts.
+- **Category Management**: Categorize posts to enhance organization and search.
+- **Comment Management**: Engage with posts through comments and replies.
+- **Search Functionality**: Search posts by title or category tags.
+- **API Documentation**: Swagger for clear and interactive API documentation.
 
 ## Installation
 
-1. **Clone the Repository**
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/blog-website.git
+cd blog-website
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Set Up Environment Variables
+
+Create a `.env` file in the root directory and add the following environment variables:
+
+```env
+DATABASE_URL=your_postgres_database_url
+JWT_SECRET=your_jwt_secret
+BCRYPT_SALT_ROUNDS=10
+```
+
+### 4. Run Migrations
+
+```bash
+npx sequelize-cli db:migrate
+```
+
+### 5. Seed the Database
+
+```bash
+npx sequelize-cli db:seed:all
+```
+
+### 6. Start the Application
+
+```bash
+npm run start:dev
+```
+
+### 7. Access Swagger Documentation
+
+Once the application is running, access the Swagger documentation by navigating to:
+
+```
+http://localhost:3000/api-docs
+```
+
+This will open an interactive API documentation page where you can explore and test the API endpoints directly.
+
+## Swagger Implementation
+
+Swagger is integrated to provide detailed and interactive API documentation. The Swagger setup is configured in the `app.js` file and is available at the `/api-docs` route. This documentation covers all the endpoints, including parameters, request bodies, and response formats.
+
+To set up Swagger in your project:
+
+1. **Install Swagger Dependencies**
 
    ```bash
-   git clone https://github.com/your-username/blog-website.git
-   cd blog-website
+   npm install swagger-jsdoc swagger-ui-express
    ```
 
-2. **Install Dependencies**
+2. **Configure Swagger in `app.js`**
 
-   ```bash
-   npm install
+   Add the following code in your `app.js`:
+
+   ```javascript
+   const swaggerJsDoc = require('swagger-jsdoc');
+   const swaggerUi = require('swagger-ui-express');
+
+   const swaggerOptions = {
+     swaggerDefinition: {
+       openapi: '3.0.0',
+       info: {
+         title: 'Blog Website API',
+         version: '1.0.0',
+         description: 'API Documentation for the Blog Website',
+         contact: {
+           name: 'Abdul Aziz',
+           url: 'https://connect2abdulaziz.github.io/abdulaziz/',
+           email: 'connect2abdulaziz@gmail.com'
+         }
+       },
+       servers: [
+         {
+           url: 'http://localhost:3000',
+           description: 'Development server'
+         }
+       ]
+     },
+     apis: ['./routes/*.js'] // Path to the API docs
+   };
+
+   const swaggerDocs = swaggerJsDoc(swaggerOptions);
+   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
    ```
 
-3. **Set Up Environment Variables**
+3. **Annotate Your Routes**
 
-   Create a `.env` file in the root directory and add the following environment variables:
+   Use JSDoc comments in your route files (e.g., `postRoutes.js`, `userRoutes.js`) to describe your API endpoints. Swagger will automatically generate the documentation based on these annotations.
 
-   ```env
-   DATABASE_URL=your_postgres_database_url
-   JWT_SECRET=your_jwt_secret
-   BCRYPT_SALT_ROUNDS=10
+   Example:
+
+   ```javascript
+   /**
+    * @swagger
+    * /api/v1/posts:
+    *   get:
+    *     summary: Retrieve a list of posts
+    *     tags: [Posts]
+    *     responses:
+    *       200:
+    *         description: A list of posts
+    *         content:
+    *           application/json:
+    *             schema:
+    *               type: array
+    *               items:
+    *                 $ref: '#/components/schemas/Post'
+    */
    ```
-
-4. **Run Migrations**
-
-   ```bash
-   npx sequelize-cli db:migrate
-   ```
-
-5. **Seed the Database**
-
-   ```bash
-   npx sequelize-cli db:seed:all
-   ```
-
-6. **Start the Application**
-
-   ```bash
-   npm start
-   ```
-
-
-
-
-Here’s the updated API documentation with the routes you provided, properly structured for each resource (User, Post, Comment) and with the newly added routes included:
-
-### API Endpoints
-
-#### User Routes
-
-- `POST /api/v1/users/signup`: Register a new user
-- `POST /api/v1/users/login`: Login a user
-- `POST /api/v1/users/forgot-password`: Request a password reset
-- `POST /api/v1/users/reset-password/:token`: Reset password using the token
-- `POST /api/v1/users/verify-email/:token`: Verify email address using the token
-- `GET /api/v1/users`: Get all users (Protected)
-- `GET /api/v1/users/:id`: Get user by ID (Protected)
-- `PATCH /api/v1/users/update`: Update the currently authenticated user's details (Protected)
-- `DELETE /api/v1/users/delete`: Delete the currently authenticated user (Protected)
-- `PATCH /api/v1/users/change-password`: Change the password of the currently authenticated user (Protected)
-- `POST /api/v1/users/logout`: Logout the currently authenticated user (Protected)
-
-#### Post Routes
-
-- `POST /api/v1/posts`: Create a new post (Protected)
-- `GET /api/v1/posts`: Get all posts, including search results 
-- `GET /api/v1/posts/:id`: Get a post by ID
-- `PUT /api/v1/posts/:id`: Update a post by ID (Protected)
-- `DELETE /api/v1/posts/:id`: Delete a post by ID (Protected)
-- `GET /api/v1/posts/:id/my-posts`: Get posts created by the currently authenticated user (Protected)
-
-#### Comment Routes
-
-- `POST /api/v1/comments`: Add a new comment to a post (Protected)
-- `GET /api/v1/comments/:postId`: Get all comments for a specific post
-- `GET /api/v1/comments/:id/replies`: Get all replies for a specific comment (Protected)
-- `PATCH /api/v1/comments/:id`: Update a comment by ID (Protected)
-- `DELETE /api/v1/comments/:id`: Delete a comment by ID (Protected)
 
 ## Validation
 
-The application uses Joi for input validation in the following areas:
+Input validation is handled using Joi in the following scenarios:
 
-- User registration, login, change password, reset password, update user
+- User registration, login, and profile updates
 - Post creation and updates
 - Comment creation and updates
 
-## Authentication
+## Authentication & Security
 
-The application uses JWT (JSON Web Tokens) for user authentication. Secure endpoints require a valid JWT token.
-
-## Password Security
-
-Passwords are hashed using bcrypt before being stored in the database.
+- **JWT Authentication**: Secure endpoints are protected using JWT tokens.
+- **Password Hashing**: User passwords are hashed using bcrypt before storage, ensuring password security.
 
 ## Contributing
 
-Feel free to fork the repository and submit pull requests. If you encounter any issues or have suggestions for improvements, please open an issue on GitHub.
+We welcome contributions from the community. To contribute:
+
+1. Fork the repository.
+2. Create a new branch for your feature/bugfix.
+3. Commit your changes.
+4. Submit a pull request with a detailed description of your changes.
+
+## License
+
+This project is open-source and available under the [MIT License](LICENSE).
 
 ## Contact
 
-For any questions or feedback, you can reach me at [LinkedIn](https://www.linkedin.com/in/connect2abdulaziz) and [Portfolio](https://connect2abdulaziz.github.io/abdulaziz/).
+For any questions, suggestions, or feedback, you can reach me at:
 
+- **LinkedIn**: [connect2abdulaziz](https://www.linkedin.com/in/connect2abdulaziz)
+- **Portfolio**: [connect2abdulaziz.github.io/abdulaziz](https://connect2abdulaziz.github.io/abdulaziz/)
 
