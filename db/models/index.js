@@ -17,7 +17,7 @@ if (config.use_env_variable) {
     dialectModule: pg,
   });
 } else {
-  sequelize = new Sequelize(con.DB_URL, {
+  sequelize = new Sequelize(process.env.POSTGRES_URL, {
     dialect: process.env.DIALECT,
     dialectModule: pg,
   });
