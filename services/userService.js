@@ -101,20 +101,31 @@ const verifyEmailServices = async (token) => {
   }
 };
 
-// Function to login a user with enhanced error handling
 const loginUserServices = async ({ email, password }) => {
   try {
+    // Fetch user by email
     const result = await findByEmail(email);
+
+    // Check if user exists and password matches
     if (!result || !(await bcrypt.compare(password, result.password))) {
       throw new AppError(
         ERROR_MESSAGES.INCORRECT_EMAIL_OR_PASSWORD,
         STATUS_CODE.BAD_REQUEST
       );
     }
-    const cleanedResult = result.toJSON;
-    const { password: pass, profilePicture, ...userData } = cleanedResult;
-    userData.token = generateToken({ id: result.id });
-    return userData;
+
+    // Create a new object without the password field
+    const { password: _, ...user} = result.dataValues;
+
+    // Generate token
+    const token = generateToken({ id: result.id });
+    console.log('\n\n\n');
+    console.log(user);
+    // Return user data and token
+    return {
+      ...user,
+      token
+    };
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -125,6 +136,7 @@ const loginUserServices = async ({ email, password }) => {
     );
   }
 };
+
 
 // Forgot password functionality
 const forgotPasswordServices = async ({ email }) => {

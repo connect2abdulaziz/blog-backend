@@ -234,25 +234,45 @@ paths:
           description: Unauthorized
 
   /users/update:
-    patch:
-      tags:
-        - Users
-      summary: Update the currently authenticated user's details
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/User"
-      responses:
-        "200":
-          description: User updated successfully
-        "400":
-          description: Bad request
-        "401":
-          description: Unauthorized
+  patch:
+    tags:
+      - Users
+    summary: Update the currently authenticated user's details
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+                example: "John"
+              lastName:
+                type: string
+                example: "Doe"
+              profilePic:
+                type: string
+                format: uri
+                example: "https://example.com/profile.jpg"
+              thumbnail:
+                type: string
+                format: uri
+                example: "https://example.com/thumbnail.jpg"
+            required:
+              - firstName
+              - lastName
+              - profilePic
+              - thumbnail
+    responses:
+      "200":
+        description: User updated successfully
+      "400":
+        description: Bad request
+      "401":
+        description: Unauthorized
 
   /users/delete:
     delete:
