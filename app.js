@@ -12,7 +12,8 @@ const YAML = require("yamljs");
 const path = require('path');
 const fs = require('fs');
 
-const swaggerFilePath = path.join(__dirname, 'swagger.yaml');
+// Load Swagger file
+const swaggerFilePath = path.resolve(__dirname, 'swagger.yaml');
 let swaggerDocument;
 
 if (fs.existsSync(swaggerFilePath)) {
@@ -32,11 +33,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'], 
 }));
 
+// Setup Swagger
 if (swaggerDocument) {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }
 
-// Mount API routes on "/api/v1"
+// Mount API routes
 app.use("/api/v1", appRouter);
 
 // Handle undefined routes
@@ -47,6 +49,7 @@ app.all("*", catchAsync(async (req, res, next) => {
 // Global error handler
 app.use(globalErrorHandler);
 
+// Start server
 const PORT = process.env.APP_PORT || 4000;
 app.listen(PORT, async () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
