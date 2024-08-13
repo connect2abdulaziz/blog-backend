@@ -20,9 +20,14 @@ const createPostServices = async (
       readTime,
       image,
       thumbnail,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
     return newPost;
   } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
     throw new AppError(
       ERROR_MESSAGES.CONTENT_REQUIRED,
       STATUS_CODE.INTERNAL_SERVER_ERROR
