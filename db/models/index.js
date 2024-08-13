@@ -6,20 +6,24 @@ const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../../config/config.js')[env];
+const {dbConfig: config} = require(__dirname + '../../config');
 const db = {};
 const pg = require('pg');
 
+
+console.log(config)
 let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], {
-    dialect: process.env.DIALECT,
+    dialect: config.dialect,
     dialectModule: pg,
+    
   });
 } else {
-  sequelize = new Sequelize(process.env.POSTGRES_URL, {
-    dialect: process.env.DIALECT,
+  sequelize = new Sequelize(config.dbUri, {
+    dialect: config.dialect,
     dialectModule: pg,
+    
   });
 }
 
