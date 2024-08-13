@@ -1,6 +1,5 @@
 'use strict';
 const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../../config/database');
 const Post = require('./post');
 const Comment = require('./comment');
 

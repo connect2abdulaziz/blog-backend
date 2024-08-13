@@ -1,6 +1,5 @@
 'use strict';
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../../config/database');
+const { Model, DataTypes } = require('sequelize');;
 
 const Category = sequelize.define(
   'category',
