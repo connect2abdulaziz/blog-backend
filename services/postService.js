@@ -12,7 +12,6 @@ const createPostServices = async (
   { categoryId, title, content, readTime, image, thumbnail }
 ) => {
   try {
-    console.log(userId, title, content, readTime, image, thumbnail);
     const newPost = await Post.create({
       userId,
       categoryId,
