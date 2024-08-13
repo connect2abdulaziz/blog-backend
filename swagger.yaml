@@ -10,7 +10,7 @@ info:
 
 servers:
   - url: https://blog-website-three-peach.vercel.app/api/v1
-    description: vercel development server
+    description: Vercel development server
 
 tags:
   - name: Users
@@ -234,45 +234,46 @@ paths:
           description: Unauthorized
 
   /users/update:
-  patch:
-    tags:
-      - Users
-    summary: Update the currently authenticated user's details
-    security:
-      - BearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              firstName:
-                type: string
-                example: "John"
-              lastName:
-                type: string
-                example: "Doe"
-              profilePic:
-                type: string
-                format: uri
-                example: "https://example.com/profile.jpg"
-              thumbnail:
-                type: string
-                format: uri
-                example: "https://example.com/thumbnail.jpg"
-            required:
-              - firstName
-              - lastName
-              - profilePic
-              - thumbnail
-    responses:
-      "200":
-        description: User updated successfully
-      "400":
-        description: Bad request
-      "401":
-        description: Unauthorized
+    patch:
+      tags:
+        - Users
+      summary: Update the currently authenticated user's details
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: "John"
+                lastName:
+                  type: string
+                  example: "Doe"
+                profilePic:
+                  type: string
+                  format: uri
+                  example: "https://example.com/profile.jpg"
+                thumbnail:
+                  type: string
+                  format: uri
+                  example: "https://example.com/thumbnail.jpg"
+              required:
+                - firstName
+                - lastName
+                - profilePic
+                - thumbnail
+              additionalProperties: false
+      responses:
+        "200":
+          description: User updated successfully
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
 
   /users/delete:
     delete:
@@ -365,7 +366,6 @@ paths:
         "200":
           description: List of posts
 
-  paths:
   /posts/{id}:
     get:
       tags:
@@ -425,6 +425,8 @@ paths:
                           type: string
                           format: date-time
                           description: The date and time when the comment was last updated
+        "404":
+          description: Post not found
 
     patch:
       tags:
@@ -438,6 +440,7 @@ paths:
           required: true
           schema:
             type: integer
+            description: The unique identifier of the post
       requestBody:
         required: true
         content:
@@ -451,6 +454,8 @@ paths:
           description: Bad request
         "401":
           description: Unauthorized
+        "404":
+          description: Post not found
 
     delete:
       tags:
@@ -464,30 +469,14 @@ paths:
           required: true
           schema:
             type: integer
+            description: The unique identifier of the post
       responses:
         "204":
           description: Post deleted successfully
         "401":
           description: Unauthorized
-
-  /posts/{id}/my-posts:
-    get:
-      tags:
-        - Posts
-      summary: Get posts created by the currently authenticated user
-      security:
-        - BearerAuth: []
-      parameters:
-        - in: query
-          name: searchBy
-          schema:
-            type: string
-          description: Search posts by title or category
-      responses:
-        "200":
-          description: List of posts by the user
-        "401":
-          description: Unauthorized
+        "404":
+          description: Post not found
 
   /comments:
     post:

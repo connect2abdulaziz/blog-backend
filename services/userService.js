@@ -119,8 +119,6 @@ const loginUserServices = async ({ email, password }) => {
 
     // Generate token
     const token = generateToken({ id: result.id });
-    console.log('\n\n\n');
-    console.log(user);
     // Return user data and token
     return {
       ...user,
