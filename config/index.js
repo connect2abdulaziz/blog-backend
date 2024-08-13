@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config({path: `${process.cwd()}/.env`});
 
 module.exports = {
   BASE_URL: process.env.BASE_URL || process.env.FRONTEND_URL, 
