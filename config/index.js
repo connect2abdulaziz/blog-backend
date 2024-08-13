@@ -26,7 +26,13 @@ module.exports = {
     port: process.env.DB_PORT,
     dialect: "postgres",
     seederStorage: 'sequelize',
-    dbUri: process.env.POSTGRES_URL
+    dbUri: process.env.POSTGRES_URL,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
   },
   cookieOptions: {
     httpOnly: true,

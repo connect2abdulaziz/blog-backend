@@ -17,13 +17,13 @@ if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], {
     dialect: config.dialect,
     dialectModule: pg,
-    
+    dialectOptions: config.dialectOptions,
   });
 } else {
   sequelize = new Sequelize(config.dbUri, {
     dialect: config.dialect,
     dialectModule: pg,
-    
+    dialectOptions: config.dialectOptions,
   });
 }
 
