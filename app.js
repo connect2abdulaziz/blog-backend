@@ -11,6 +11,7 @@ const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
 const path = require('path');
 const fs = require('fs');
+const cors = require('cors');
 
 // Load Swagger file
 const swaggerFilePath = path.resolve(__dirname, 'swagger.yaml');
@@ -22,21 +23,16 @@ if (fs.existsSync(swaggerFilePath)) {
   console.error('swagger.yaml file is missing');
 }
 
-const cors = require('cors');
-
+// Middleware setup
 app.use(express.json());
-
-// Use CORS middleware
 app.use(cors({
   origin: "*", 
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], 
   allowedHeaders: ['Content-Type', 'Authorization'], 
 }));
 
-// Setup Swagger
-if (swaggerDocument) {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-}
+// Serve static files (e.g., for Swagger UI)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Mount API routes
 app.use("/api/v1", appRouter);
@@ -62,3 +58,5 @@ app.listen(PORT, async () => {
     console.error("Unable to connect to the database:", error);
   }
 });
+
+module.exports = app;

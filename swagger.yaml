@@ -450,7 +450,7 @@ paths:
         "401":
           description: Unauthorized
 
-  /posts/id:/my-posts:
+  /posts/{id}/my-posts:
     get:
       tags:
         - Posts
