@@ -111,8 +111,10 @@ const loginUserServices = async ({ email, password }) => {
         STATUS_CODE.BAD_REQUEST
       );
     }
-    const token = generateToken({ id: result.id });
-    return token;
+    const cleanedResult = result.toJSON;
+    const { password: pass, profilePicture, ...userData } = cleanedResult;
+    userData.token = generateToken({ id: result.id });
+    return userData;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -140,7 +142,7 @@ const forgotPasswordServices = async ({ email }) => {
     );
 
     // Construct the reset URL
-    const resetUrl = `${process.env.FRONTEND_URL}/api/v1/user/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/api/v1/users/reset-password?token=${resetToken}`;
 
     // Send password reset email
     await transporter.sendMail({
@@ -165,7 +167,7 @@ const forgotPasswordServices = async ({ email }) => {
 };
 
 // Reset password functionality
-const resetPasswordServices = async ({ newPassword }, token) => {
+const resetPasswordServices = async ({ password }, token) => {
   try {
     // Verify the token
     let decoded;
@@ -182,7 +184,7 @@ const resetPasswordServices = async ({ newPassword }, token) => {
     }
 
     // Hash the new password
-    const hashedPassword = await hashPassword(newPassword);
+    const hashedPassword = await hashPassword(password);
 
     // Update the user's password
     user.password = hashedPassword;

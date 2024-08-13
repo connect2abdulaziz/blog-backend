@@ -59,7 +59,7 @@ const forgotPasswordSchema = Joi.object({
 
 // Validation schema for reset password
 const resetPasswordSchema = Joi.object({
-  newPassword: Joi.string()
+  password: Joi.string()
     .min(8)
     .pattern(PASSWORD_PATTERN.REGEXP)
     .required()

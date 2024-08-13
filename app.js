@@ -6,8 +6,10 @@ const catchAsync = require("./utils/errors/catchAsync");
 const AppError = require("./utils/errors/appError");
 const globalErrorHandler = require("./utils/errors/errorHandler");
 const { STATUS_CODE } = require("./utils/constants/constants");
+
 const swaggerUi = require("swagger-ui-express")
 const YAML = require("yamljs");
+
 const cors = require('cors');
 const swaggerDocument = YAML.load('./swagger.yaml');
 
@@ -15,7 +17,7 @@ app.use(express.json());
 
 // Use CORS middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL, 
+  origin: "*", 
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], 
   allowedHeaders: ['Content-Type', 'Authorization'], 
 }));

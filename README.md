@@ -20,47 +20,54 @@ The project is organized following best practices to maintain scalability and ea
 
 ```bash
 app.js
+.env
+.sequelizerc
+LICENSE
+package-lock.json
+package.json
+README.md
+swagger.yaml
 ├── config
 │   ├── config.js
 │   └── database.js
-├── routes
-│   ├── index.js
-│   ├── postRoutes.js
-│   ├── userRoutes.js
-│   └── commentRoutes.js
 ├── controllers
+│   ├── commentController.js
 │   ├── postController.js
-│   ├── userController.js
-│   └── commentController.js
-├── services
-│   ├── postService.js
-│   ├── userService.js
-│   └── commentService.js
+│   └── userController.js
 ├── db
-│   ├── models
-│   │   ├── post.js
-│   │   ├── user.js
-│   │   ├── comment.js
-│   │   └── category.js
 │   ├── migrations
+│   ├── models
+│   │   ├── category.js
+│   │   ├── comment.js
+│   │   ├── post.js
+│   │   └── user.js
 │   └── seeders
 ├── middleware
 │   └── auth.js
+├── routes
+│   ├── commentRoutes.js
+│   ├── index.js
+│   ├── postRoutes.js
+│   └── userRoutes.js
+├── services
+│   ├── commentService.js
+│   ├── postService.js
+│   └── userService.js
 └── utils
-    ├── validators
-    │   ├── postValidator.js
-    │   ├── userValidator.js
-    │   └── commentValidator.js
     ├── constants
-    │   └── constants.js  
-    ├── errors     
+    │   └── constants.js
+    ├── errors
+    │   ├── appError.js
     │   ├── appSuccess.js
-    │   ├── catchAsync.js
-    │   └── appError.js
+    │   └── catchAsync.js
     ├── helpers
-        ├── emailUtils.js
-        ├── errorHandler.js
-        └── hashPasswordUtils.js
+    │   ├── emailUtils.js
+    │   ├── errorHandler.js
+    │   └── hashPasswordUtils.js
+    └── validators
+        ├── commentValidator.js
+        ├── postValidator.js
+        └── userValidator.js
 ```
 
 ## Features
