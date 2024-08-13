@@ -9,7 +9,7 @@ info:
     email: connect2abdulaziz@gmail.com
 
 servers:
-  - url: https://blog-website-three-peach.vercel.app/api/v1/
+  - url: https://blog-website-three-peach.vercel.app/api/v1
     description: vercel development server
 
 tags:
