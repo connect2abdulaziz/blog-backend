@@ -1,20 +1,22 @@
-require("dotenv").config({ path: `${process.cwd()}/.env` });
-const user = require("../db/models/user");
-const jwt = require("jsonwebtoken");
-const catchAsync = require("../utils/errors/catchAsync");
-const AppError = require("../utils/errors/appError");
-const { STATUS_CODE, ERROR_MESSAGES } = require("../utils/constants/constants");
-const { generateToken } = require("../utils/helpers/emailUtils");
+import dotenv from 'dotenv';
+import user from '../db/models/user.js';
+import jwt from 'jsonwebtoken';
+import catchAsync from '../utils/errors/catchAsync.js';
+import AppError from '../utils/errors/appError.js';
+import { STATUS_CODE, ERROR_MESSAGES } from '../utils/constants/constants.js';
+
+// Load environment variables from .env file
+dotenv.config({ path: `${process.cwd()}/.env` });
 
 // Middleware for authentication
 const authentication = catchAsync(async (req, res, next) => {
   // 1. Get the token from header
-  let idToken = "";
+  let idToken = '';
   if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
+    req.headers.authorization.startsWith('Bearer')
   ) {
-    idToken = req.headers.authorization.split(" ")[1];
+    idToken = req.headers.authorization.split(' ')[1];
   }
   if (!idToken) {
     return next(
@@ -37,17 +39,4 @@ const authentication = catchAsync(async (req, res, next) => {
   return next();
 });
 
-// Middleware to restrict access to certain user types
-const restrictTo = (...userTypes) => {
-  const checkPermission = (req, res, next) => {
-    if (!userTypes.includes(req.user.userType)) {
-      return next(
-        new AppError(ERROR_MESSAGES.FORBIDDEN, STATUS_CODE.FORBIDDEN)
-      );
-    }
-    return next();
-  };
-  return checkPermission;
-};
-
-module.exports = { generateToken, authentication, restrictTo };
+export { authentication };

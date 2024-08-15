@@ -1,8 +1,9 @@
 'use strict';
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../../config/database');
-const Category = require('./category');
-const Comment = require('./comment');
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../../config/database.js'; 
+import Category from './category.js'; 
+import Comment from './comment.js'; 
+
 const Post = sequelize.define(
   'post',
   {
@@ -76,4 +77,4 @@ Post.belongsTo(Category, { foreignKey: 'categoryId',});
 Post.hasMany(Comment, {foreignKey: 'postId',});
 Comment.belongsTo(Post, { foreignKey: 'postId',});
 
-module.exports = Post;
+export default Post;

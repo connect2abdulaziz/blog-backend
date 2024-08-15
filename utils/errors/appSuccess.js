@@ -6,4 +6,4 @@ function appSuccess(message, data = {}) {
   };
 }
 
-module.exports = appSuccess;
+export default appSuccess;

@@ -1,18 +1,16 @@
-const Post = require("../db/models/post");
-const User = require("../db/models/user");
-const Category = require("../db/models/category");
-const Comment = require("../db/models/comment");
-const AppError = require("../utils/errors/appError");
-const { Op } = require("sequelize");
-const { ERROR_MESSAGES, STATUS_CODE } = require("../utils/constants/constants");
+import { Op } from 'sequelize';
+import AppError from '../utils/errors/appError.js';
+import Post from '../db/models/post.js';
+import User from '../db/models/user.js';
+import Category from '../db/models/category.js';
+import Comment from '../db/models/comment.js';
+import { ERROR_MESSAGES, STATUS_CODE } from '../utils/constants/constants.js';
+import paginate from '../utils/pagination.js';
 
 // Create a new post
-const createPostServices = async (
-  userId,
-  { categoryId, title, content, readTime, image, thumbnail }
-) => {
+const createPostServices = async (userId, { categoryId, title, content, readTime, image, thumbnail }) => {
   try {
-    console.log("Creating post", userId, categoryId, title, content);
+    console.log('Creating post', userId, categoryId, title, content);
     const newPost = await Post.create({
       userId,
       categoryId,
@@ -24,177 +22,139 @@ const createPostServices = async (
     });
     return newPost;
   } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    throw new AppError(
-      ERROR_MESSAGES.CONTENT_REQUIRED,
-      STATUS_CODE.INTERNAL_SERVER_ERROR
-    );
+    throw new AppError(error.message || ERROR_MESSAGES.CONTENT_REQUIRED, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
-const getAllPostServices = async (searchBy, userId) => {
+// Get all posts with optional search and user filter
+const getAllPostServices = async (searchBy, userId, { page = 1, limit = 10 }) => {
   try {
-    console.log("Getting all posts", searchBy, userId);
+    console.log('Getting all posts', searchBy, userId);
+
     // Define the base query options
     const queryOptions = {
-      order: [["createdAt", "DESC"]],
+      order: [['createdAt', 'DESC']],
       include: [
         {
           model: User,
-          as: "user",
-          attributes: ["id", "firstName", "lastName", "thumbnail"],
+          as: 'user',
+          attributes: ['id', 'firstName', 'lastName', 'thumbnail'],
         },
         {
           model: Category,
-          as: "category",
-          attributes: ["id", "tag"],
+          as: 'category',
+          attributes: ['id', 'tag'],
         },
       ],
+      where: {},
     };
 
-    // Initialize where clause
-    queryOptions.where = {};
-
-    // If userId is provided, add the userId condition to the query
+    // Apply filters if provided
     if (userId) {
       queryOptions.where.userId = userId;
     }
 
-    // If a search term is provided, add the search condition to the query
     if (searchBy) {
       queryOptions.where[Op.or] = [
-        {
-          title: {
-            [Op.iLike]: `%${searchBy}%`,
-          },
-        },
-        {
-          "$category.tag$": {
-            [Op.iLike]: `%${searchBy}%`,
-          },
-        },
+        { title: { [Op.iLike]: `%${searchBy}%` } },
+        { '$category.tag$': { [Op.iLike]: `%${searchBy}%` } },
       ];
     }
 
-    // Execute the query with the constructed options and include the count
-    const { count, rows: posts } = await Post.findAndCountAll(queryOptions);
-    return { count, posts };
+    // Use pagination utility function
+    const paginatedPosts = await paginate(page, limit, queryOptions);
+    return paginatedPosts;
   } catch (error) {
-    if( error instanceof AppError ) {
-      throw error;
-    }
-    throw new AppError(
-      ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
-      STATUS_CODE.INTERNAL_SERVER_ERROR
-    );
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
-
-
-
 
 // Get details of a specific post by postId
 const getPostServices = async (postId) => {
   try {
-    console.log("Getting post", postId);
+    console.log('Getting post', postId);
     const post = await Post.findByPk(postId, {
       include: [
         {
           model: User,
-          as: "user",
-          attributes: ["id", "firstName", "lastName", "email"],
+          as: 'user',
+          attributes: ['id', 'firstName', 'lastName', 'email'],
         },
         {
           model: Category,
-          as: "category",
-          attributes: ["id", "tag"],
+          as: 'category',
+          attributes: ['id', 'tag'],
         },
         {
           model: Comment,
-          as: "comments",
+          as: 'comments',
           include: [
             {
               model: User,
-              as: "user",
-              attributes: ["id", "firstName", "lastName", "thumbnail"],
+              as: 'user',
+              attributes: ['id', 'firstName', 'lastName', 'thumbnail'],
             },
           ],
-          attributes: ["id", "content", "createdAt"],
+          attributes: ['id', 'content', 'createdAt'],
         },
       ],
     });
 
     if (!post) {
-      console.log("No post found");
       throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
 
     return post;
   } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    throw new AppError(
-      ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
-      STATUS_CODE.INTERNAL_SERVER_ERROR
-    );
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
-
-
 // Get all posts created by a specific user
-const myPostsServices = async (userId) => {
+const myPostsServices = async (userId, { page = 1, limit = 10 }) => {
   try {
-    console.log("Getting posts by user", userId);
-    const posts = await Post.findAll({
+    console.log('Getting posts by user', userId);
+
+    // Define the base query options
+    const queryOptions = {
       where: { userId },
       include: [
         {
           model: User,
-          as: "user",
-          attributes: ["id", "firstName", "lastName", "email"],
+          as: 'user',
+          attributes: ['id', 'firstName', 'lastName', 'email'],
         },
         {
           model: Category,
-          as: "category",
-          attributes: ["id", "tag"],
+          as: 'category',
+          attributes: ['id', 'tag'],
         },
       ],
-      order: [["createdAt", "DESC"]],
-    });
-    if (!posts) {
-      throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
-    }
-    return posts;
+      order: [['createdAt', 'DESC']],
+    };
+
+    // Use pagination utility function
+    const paginatedPosts = await paginate(page, limit, queryOptions);
+    return paginatedPosts;
   } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    throw new AppError(
-      ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
-      STATUS_CODE.INTERNAL_SERVER_ERROR
-    );
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
 // Update an existing post
-const updatePostServices = async (
-  postId,
-  userId,
-  { categoryId, title, content, readTime, image, thumbnail }
-) => {
+const updatePostServices = async (postId, userId, { categoryId, title, content, readTime, image, thumbnail }) => {
   try {
-    console.log("Updating post", postId, userId, categoryId, title, content);
+    console.log('Updating post', postId, userId, categoryId, title, content);
     const post = await Post.findByPk(postId);
+
     if (!post) {
       throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
+
     if (post.userId !== userId) {
       throw new AppError(ERROR_MESSAGES.UNAUTHORIZED, STATUS_CODE.UNAUTHORIZED);
     }
+
     await Post.update(
       {
         categoryId,
@@ -209,16 +169,11 @@ const updatePostServices = async (
         where: { id: postId, userId },
       }
     );
+
     const updatedPost = await Post.findByPk(postId);
     return { post, updatedPost };
   } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    throw new AppError(
-      ERROR_MESSAGES.POST_UPDATE_FAILED,
-      STATUS_CODE.INTERNAL_SERVER_ERROR
-    );
+    throw new AppError(error.message || ERROR_MESSAGES.POST_UPDATE_FAILED, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -226,26 +181,23 @@ const updatePostServices = async (
 const deletePostServices = async ({ postId, userId }) => {
   try {
     const post = await Post.findByPk(postId);
+
     if (!post) {
       throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
+
     if (post.userId !== userId) {
       throw new AppError(ERROR_MESSAGES.UNAUTHORIZED, STATUS_CODE.UNAUTHORIZED);
     }
+
     await Post.destroy({ where: { id: postId, userId } });
     return postId;
   } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    throw new AppError(
-      ERROR_MESSAGES.POST_DELETION_FAILED,
-      STATUS_CODE.INTERNAL_SERVER_ERROR
-    );
+    throw new AppError(error.message || ERROR_MESSAGES.POST_DELETION_FAILED, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
-module.exports = {
+export {
   createPostServices,
   getAllPostServices,
   getPostServices,

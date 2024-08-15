@@ -1,19 +1,22 @@
-const catchAsync = require("../utils/errors/catchAsync");
-const AppError = require("../utils/errors/appError");
-const appSuccess = require("../utils/errors/appSuccess");
-const {
+import catchAsync from '../utils/errors/catchAsync.js';
+import AppError from '../utils/errors/appError.js';
+import appSuccess from '../utils/errors/appSuccess.js';
+import {
   commentSchema,
   updateCommentSchema,
-} = require("../utils/validations/commentValidator");
-const {
+} from '../utils/validations/commentValidator.js';
+import {
   addCommentServices,
   postCommentsServices,
   updateCommentServices,
   getCommentRepliesServices,
   deleteCommentServices,
-} = require("../services/commentService");
+} from '../services/commentService.js';
+import {
+  STATUS_CODE,
+  SUCCESS_MESSAGES,
+} from '../utils/constants/constants.js';
 
-const { STATUS_CODE, SUCCESS_MESSAGES } = require("../utils/constants/constants");
 
 // Create new comment
 const createComment = catchAsync(async (req, res, next) => {
@@ -61,7 +64,7 @@ const deleteCommentById = catchAsync(async (req, res, next) => {
   return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.COMMENT_DELETED, deletedComment));
 });
 
-module.exports = {
+export {
   createComment,
   postComments,
   updateCommentById,

@@ -1,6 +1,7 @@
 'use strict';
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../../config/database');
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../../config/database.js';
+
 
 const Comment = sequelize.define(
   'comment',
@@ -67,4 +68,4 @@ const Comment = sequelize.define(
 Comment.belongsTo(Comment, { foreignKey: 'parentId',});
 Comment.hasMany(Comment, { foreignKey: 'parentId',});
 
-module.exports = Comment;
+export default Comment;

@@ -1,24 +1,23 @@
-const catchAsync = require("../utils/errors/catchAsync");
-const AppError = require("../utils/errors/appError");
-const appSuccess = require("../utils/errors/appSuccess");
-const {
+import catchAsync from '../utils/errors/catchAsync.js';
+import AppError from '../utils/errors/appError.js';
+import appSuccess from '../utils/errors/appSuccess.js';
+import {
   postSchema,
   updateSchema,
-} = require("../utils/validations/postValidator");
-
-const {
+} from '../utils/validations/postValidator.js';
+import {
   createPostServices,
   getAllPostServices,
   getPostServices,
   updatePostServices,
   deletePostServices,
-} = require("../services/postService");
-
-const {
+} from '../services/postService.js';
+import {
   STATUS_CODE,
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
-} = require("../utils/constants/constants");
+} from '../utils/constants/constants.js';
+
 
 // Create new post
 const createPost = catchAsync(async (req, res, next) => {
@@ -84,7 +83,7 @@ const deletePostById = catchAsync(async (req, res, next) => {
     .json(appSuccess(SUCCESS_MESSAGES.POST_DELETED, deletedPostId));
 });
 
-module.exports = {
+export {
   createPost,
   getPosts,
   getPostById,

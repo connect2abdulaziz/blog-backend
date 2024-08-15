@@ -1,11 +1,13 @@
-const router = require("express").Router();
-const userRouter = require("./userRoute");
-const postRouter = require("./postRoute");
-const commentRouter = require("./commentRoute");
+import express from 'express';
+import userRouter from './userRoute.js';
+import postRouter from './postRoute.js';
+import commentRouter from './commentRoute.js';
 
-// Define routes
-router.use("/users", userRouter);
-router.use("/posts", postRouter);
-router.use("/comments", commentRouter);
+const router = express.Router();
 
-module.exports = router;
+// Use the routers
+router.use('/users', userRouter);
+router.use('/posts', postRouter);
+router.use('/comments', commentRouter);
+
+export default router;

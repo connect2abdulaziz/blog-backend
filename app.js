@@ -1,21 +1,27 @@
-const express = require("express");
-const app = express();
-const sequelize = require("./config/database");
-const appRouter = require("./routes");
-const catchAsync = require("./utils/errors/catchAsync");
-const AppError = require("./utils/errors/appError");
-const globalErrorHandler = require("./utils/errors/errorHandler");
-const { STATUS_CODE } = require("./utils/constants/constants");
+import express from 'express';
+import sequelize from './config/database.js';
+import appRouter from './routes/index.js';
+import catchAsync from './utils/errors/catchAsync.js';
+import AppError from './utils/errors/appError.js';
+import globalErrorHandler from './utils/errors/errorHandler.js';
+import { STATUS_CODE } from './utils/constants/constants.js';
 
-const swaggerUi = require("swagger-ui-express");
-const YAML = require("yamljs");
-const path = require('path');
-const cors = require('cors');
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import cors from 'cors';
+
+// Resolve the __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load Swagger file
 const swaggerFilePath = path.resolve(__dirname, 'swagger.yaml');
-let swaggerDocument;
-swaggerDocument = YAML.load(swaggerFilePath);
+const swaggerDocument = YAML.load(swaggerFilePath);
+
+// Create Express app
+const app = express();
 
 // Serve static files (e.g., for Swagger UI)
 app.use(
@@ -34,14 +40,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'], 
 }));
 
-
-
 // Mount API routes
 app.use("/api/v1", appRouter);
 
 // Handle undefined routes
 app.all("*", catchAsync(async (req, res, next) => {
-    return next(new AppError(`Can't find ${req.originalUrl} on this server`, STATUS_CODE.NOT_FOUND));
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, STATUS_CODE.NOT_FOUND));
 }));
 
 // Global error handler
@@ -61,4 +65,4 @@ app.listen(PORT, async () => {
   }
 });
 
-module.exports = app;
+export default app;

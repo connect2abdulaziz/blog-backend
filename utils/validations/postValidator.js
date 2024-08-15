@@ -1,5 +1,6 @@
-const Joi = require("joi");
-const { ERROR_MESSAGES } = require("../constants/constants");
+import Joi from 'joi';
+import { ERROR_MESSAGES } from '../constants/constants.js';
+
 
 // Validation schema for creating a post
 const postSchema = Joi.object({
@@ -45,7 +46,7 @@ const updateSchema = Joi.object({
   }),
 });
 
-module.exports = {
+export {
   postSchema,
   updateSchema,
 };

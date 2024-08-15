@@ -2,6 +2,7 @@
   "name": "test",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "check-pg": "node -e \"console.log(require('pg').version)\"",
     "start:dev": "nodemon app.js"

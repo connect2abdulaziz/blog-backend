@@ -1,4 +1,4 @@
-const {
+import {
   signup,
   verifyEmail,
   login,
@@ -10,10 +10,11 @@ const {
   deleteUser,
   changePassword,
   logout,
-} = require("../controllers/userController");
-const { getPosts } = require("../controllers/postController");
-const { authentication } = require("../middleware/auth");
-const router = require("express").Router();
+} from "../controllers/userController.js";
+import { authentication } from "../middleware/auth.js";
+import express from "express";
+
+const router = express.Router();
 
 // User auth related routes
 router.route("/signup").post(signup);
@@ -30,4 +31,4 @@ router.route("/delete").delete(authentication, deleteUser);
 router.route("/change-password").patch(authentication, changePassword);
 router.route("/logout").post(authentication, logout);
 
-module.exports = router;
+export default router;

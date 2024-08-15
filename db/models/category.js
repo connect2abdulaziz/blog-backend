@@ -1,6 +1,7 @@
 'use strict';
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../../config/database');
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../../config/database.js';
+
 
 const Category = sequelize.define(
   'category',
@@ -33,4 +34,4 @@ const Category = sequelize.define(
   }
 );
 
-module.exports = Category;
+export default Category;

@@ -1,6 +1,7 @@
-const {Sequelize} = require('sequelize');
-const {dbConfig:config} = require('./index');
-const pg = require('pg');
+import { Sequelize } from 'sequelize';
+import { dbConfig as config } from './index.js';
+import pg from 'pg';
+
 
 let sequelize;
 if (config.use_env_variable) {
@@ -17,4 +18,4 @@ if (config.use_env_variable) {
   });
 }
 
-module.exports = sequelize;
+export default sequelize;

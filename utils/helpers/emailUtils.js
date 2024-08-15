@@ -1,35 +1,31 @@
+import nodemailer from 'nodemailer';
+const { EMAIL_FROM, EMAIL_USER, EMAIL_PASS } = process.env;
 
-const nodemailer = require('nodemailer');
-const jwt = require('jsonwebtoken');
-const { EMAIL_FROM } = process.env;
 
-// Configure Nodemailer transport
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+    user: EMAIL_USER,
+    pass: EMAIL_PASS,
+  },
 });
 
-// Function to generate JWT token
-const generateToken = (payload) => {
-    return jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    });
+const sendEmail = async ({ to, subject, text, html }) => {
+  const mailOptions = {
+    from: EMAIL_FROM,
+    to,
+    subject,
+    text,
+    html,
   };
 
-// Function to send verification email
-const sendVerificationEmail = async (email, token) => {
-  const verificationUrl = `${process.env.FRONTEND_URL}/api/v1/user/verifyEmail/${token}`;
-
-  await transporter.sendMail({
-    from: EMAIL_FROM,
-    to: email,
-    subject: 'Email Verification',
-    text: `Please verify your email by clicking the following link: ${verificationUrl}`,
-    html: `<p>Please verify your email by clicking the following link: <a href="${verificationUrl}">Verify Email</a></p>`
-  });
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully');
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw new Error('Could not send email');
+  }
 };
 
-module.exports = { generateToken, sendVerificationEmail };
+export default sendEmail

@@ -1,8 +1,9 @@
-const Comment = require("../db/models/comment");
-const User = require("../db/models/user");
-const Post = require("../db/models/post");
-const AppError = require("../utils/errors/appError");
-const {ERROR_MESSAGES, STATUS_CODE} = require("../utils/constants/constants");
+import Comment from "../db/models/comment.js";
+import User from "../db/models/user.js";
+import Post from "../db/models/post.js";
+import AppError from "../utils/errors/appError.js";
+import { ERROR_MESSAGES, STATUS_CODE } from "../utils/constants/constants.js";
+import paginate from "../utils/pagination.js";
 
 
 // Add a new comment to a post
@@ -39,21 +40,18 @@ const addCommentServices = async ({ postId, parentId, content }, userId) => {
       },
     };
   } catch (error) {
-    if (error instanceof AppError) {
-        throw error;
-    }
     throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.BAD_REQUEST);
   }
 };
 
-// Get comments by post ID with hierarchical structure
-const postCommentsServices = async (postId) => {
+// Get comments by post ID with hierarchical structure and pagination
+const postCommentsServices = async (postId, queryOptions) => {
   try {
     if (!(await Post.findByPk(postId))) {
       throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
 
-    const comments = await Comment.findAll({
+    const { data: comments, pagination } = await paginate(Comment, {
       where: { postId },
       include: [
         {
@@ -62,6 +60,7 @@ const postCommentsServices = async (postId) => {
         },
       ],
       order: [["createdAt", "ASC"]],
+      ...queryOptions,
     });
 
     // Function to build a hierarchical structure
@@ -91,19 +90,19 @@ const postCommentsServices = async (postId) => {
 
     const hierarchicalComments = buildHierarchy(comments);
 
-    return hierarchicalComments;
+    // Return hierarchical comments with pagination metadata
+    return {
+      comments: hierarchicalComments,
+      pagination,
+    };
   } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
     throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.BAD_REQUEST);
   }
 };
 
 // Update an existing comment
-const updateCommentServices = async ({ content }, {commentId, userId}) => {
+const updateCommentServices = async ({ content }, { commentId, userId }) => {
   try {
-    console.log('Updating comment', commentId, userId);
     const comment = await Comment.findByPk(commentId);
     if (!comment) {
       throw new AppError(ERROR_MESSAGES.COMMENT_NOT_FOUND, STATUS_CODE.NOT_FOUND);
@@ -117,58 +116,58 @@ const updateCommentServices = async ({ content }, {commentId, userId}) => {
     });
     return comment;
   } catch (error) {
-    if(error instanceof AppError) {
-        throw error;
-    }
     throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.BAD_REQUEST);
   }
 };
 
-
-// Function to get all replies on a comment
-const getCommentRepliesServices = async (commentId) => {
-    try {
-      const comment = await Comment.findByPk(commentId);
-      if (!comment) {
-        throw new AppError(ERROR_MESSAGES.COMMENT_NOT_FOUND, STATUS_CODE.NOT_FOUND);
-      }
-      const replies = await Comment.findAll({
-        where: {
-          parentId: commentId
-        }
-      });
-      return replies;
-    } catch (error) {
-      if(error instanceof AppError){
-        throw error;
-      }
-      throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
-    }
-  };
-
-// Delete a comment
-const deleteCommentServices = async ({commentId, userId}) => {
+// Function to get all replies on a comment with pagination
+const getCommentRepliesServices = async (commentId, queryOptions) => {
   try {
     const comment = await Comment.findByPk(commentId);
     if (!comment) {
       throw new AppError(ERROR_MESSAGES.COMMENT_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
-    if (comment.userId!== userId) {
+
+    const { data: replies, pagination } = await paginate(Comment, {
+      where: { parentId: commentId },
+      include: [
+        {
+          model: User,
+          attributes: ["id", "firstName", "thumbnail"],
+        },
+      ],
+      order: [["createdAt", "ASC"]],
+      ...queryOptions,
+    });
+
+    // Return replies with pagination metadata
+    return {
+      replies,
+      pagination,
+    };
+  } catch (error) {
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.BAD_REQUEST);
+  }
+};
+
+// Delete a comment
+const deleteCommentServices = async ({ commentId, userId }) => {
+  try {
+    const comment = await Comment.findByPk(commentId);
+    if (!comment) {
+      throw new AppError(ERROR_MESSAGES.COMMENT_NOT_FOUND, STATUS_CODE.NOT_FOUND);
+    }
+    if (comment.userId !== userId) {
       throw new AppError(ERROR_MESSAGES.UNAUTHORIZED, STATUS_CODE.UNAUTHORIZED);
     }
     await comment.destroy();
     return commentId;
   } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
     throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.BAD_REQUEST);
   }
 };
 
-
-
-module.exports = {
+export {
   addCommentServices,
   postCommentsServices,
   updateCommentServices,

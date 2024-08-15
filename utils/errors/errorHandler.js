@@ -1,5 +1,6 @@
-const AppError = require('./appError');
-const { STATUS_CODE, ERROR_MESSAGES } = require('../constants/constants');
+import AppError from './appError.js';
+import { STATUS_CODE, ERROR_MESSAGES } from '../constants/constants.js';
+
 
 // Send detailed error information in development
 const sendErrorDev = (error, response) => {
@@ -58,4 +59,4 @@ const globalErrorHandler = (err, req, res, next) => {
     return sendErrorProd(err, res);
 };
 
-module.exports = globalErrorHandler;
+export default globalErrorHandler;

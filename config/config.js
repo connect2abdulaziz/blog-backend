@@ -1,4 +1,7 @@
-require('dotenv').config({path: `${process.cwd()}/.env`});
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: `${process.cwd()}/.env` });
+
 
 
 module.exports = {

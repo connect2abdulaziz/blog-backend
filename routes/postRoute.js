@@ -1,12 +1,14 @@
-const router = require("express").Router();
-const {
+import express from 'express';
+import {
   createPost,
   getPosts,
   getPostById,
   updatePostById,
   deletePostById,
-} = require("../controllers/postController");
-const { authentication } = require("../middleware/auth");
+} from '../controllers/postController.js';
+import { authentication } from '../middleware/auth.js';
+
+const router = express.Router();
 
 // get all posts and create new ones
 router.route("/").get(getPosts);
@@ -17,4 +19,4 @@ router.route("/").post(authentication, createPost);
 router.route("/:id/my-posts").get(authentication, getPosts);
 router.route("/:id").patch(authentication, updatePostById);
 router.route("/:id").delete(authentication, deletePostById);
-module.exports = router;
+export default router;

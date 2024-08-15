@@ -1,15 +1,15 @@
-const catchAsync = require("../utils/errors/catchAsync");
-const AppError = require("../utils/errors/appError");
-const appSuccess = require("../utils/errors/appSuccess");
-const {
+import catchAsync from '../utils/errors/catchAsync.js';
+import AppError from '../utils/errors/appError.js';
+import appSuccess from '../utils/errors/appSuccess.js';
+import {
   userSchema,
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
   updateUserSchema,
   changePasswordSchema,
-} = require("../utils/validations/userValidator");
-const {
+} from '../utils/validations/userValidator.js';
+import {
   createUserServices,
   loginUserServices,
   forgotPasswordServices,
@@ -20,12 +20,12 @@ const {
   updateUserServices,
   deleteUserServices,
   changePasswordServices,
-} = require("../services/userService");
-
-const {
+} from '../services/userService.js';
+import {
   STATUS_CODE,
   SUCCESS_MESSAGES,
-} = require("../utils/constants/constants");
+} from '../utils/constants/constants.js';
+
 
 // Signup Controller
 const signup = catchAsync(async (req, res, next) => {
@@ -154,7 +154,7 @@ const logout = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = {
+export {
   signup,
   verifyEmail,
   login,

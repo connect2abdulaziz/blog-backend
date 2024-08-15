@@ -1,5 +1,6 @@
-const Joi = require("joi");
-const { ERROR_MESSAGES, PASSWORD_PATTERN } = require("../constants/constants");
+import Joi from 'joi';
+import { ERROR_MESSAGES, PASSWORD_PATTERN } from '../constants/constants.js';
+
 
 // Validation schema for user registration
 const userSchema = Joi.object({
@@ -105,7 +106,7 @@ const changePasswordSchema = Joi.object({
     }),
 });
 
-module.exports = {
+export {
   userSchema,
   loginSchema,
   forgotPasswordSchema,

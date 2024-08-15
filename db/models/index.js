@@ -1,14 +1,14 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const process = require('process');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const {dbConfig: config} = require('../../config');
-const db = {};
-const pg = require('pg');
+import fs from 'fs';
+import path from 'path';
+import Sequelize from 'sequelize';
+import process from 'process';
+import { dbConfig as config } from '../../config.js';
+import pg from 'pg';
+
+const basename = path.basename(import.meta.url);
+
 
 
 console.log(config)
