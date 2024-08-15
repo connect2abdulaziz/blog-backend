@@ -481,6 +481,12 @@ paths:
       tags:
         - Posts
       summary: Get all posts of a specific user
+      parameters:
+        - in: query
+          name: searchBy
+          schema:
+            type: string
+          description: Search posts by title or category
       security:
         - BearerAuth: []
       responses:
