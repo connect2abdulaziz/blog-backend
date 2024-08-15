@@ -49,7 +49,7 @@ const updateCommentById = catchAsync(async (req, res, next) => {
   if (error) {
     return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
   }
-  const updatedComment = await updateCommentServices(value, commentId, userId);
+  const updatedComment = await updateCommentServices(value, {commentId, userId});
   return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.COMMENT_UPDATED, updatedComment));
 });
 

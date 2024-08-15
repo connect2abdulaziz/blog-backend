@@ -103,6 +103,7 @@ const postCommentsServices = async (postId) => {
 // Update an existing comment
 const updateCommentServices = async ({ content }, {commentId, userId}) => {
   try {
+    console.log('Updating comment', commentId, userId);
     const comment = await Comment.findByPk(commentId);
     if (!comment) {
       throw new AppError(ERROR_MESSAGES.COMMENT_NOT_FOUND, STATUS_CODE.NOT_FOUND);
