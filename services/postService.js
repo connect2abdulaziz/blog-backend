@@ -12,6 +12,7 @@ const createPostServices = async (
   { categoryId, title, content, readTime, image, thumbnail }
 ) => {
   try {
+    console.log("Creating post", userId, categoryId, title, content);
     const newPost = await Post.create({
       userId,
       categoryId,
@@ -35,6 +36,7 @@ const createPostServices = async (
 
 const getAllPostServices = async (searchBy, userId) => {
   try {
+    console.log("Getting all posts", searchBy, userId);
     // Define the base query options
     const queryOptions = {
       order: [["createdAt", "DESC"]],
@@ -96,6 +98,7 @@ const getAllPostServices = async (searchBy, userId) => {
 // Get details of a specific post by postId
 const getPostServices = async (postId) => {
   try {
+    console.log("Getting post", postId);
     const post = await Post.findByPk(postId, {
       include: [
         {
@@ -145,6 +148,7 @@ const getPostServices = async (postId) => {
 // Get all posts created by a specific user
 const myPostsServices = async (userId) => {
   try {
+    console.log("Getting posts by user", userId);
     const posts = await Post.findAll({
       where: { userId },
       include: [
@@ -183,6 +187,7 @@ const updatePostServices = async (
   { categoryId, title, content, readTime, image, thumbnail }
 ) => {
   try {
+    console.log("Updating post", postId, userId, categoryId, title, content);
     const post = await Post.findByPk(postId);
     if (!post) {
       throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);

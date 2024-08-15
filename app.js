@@ -10,18 +10,21 @@ const { STATUS_CODE } = require("./utils/constants/constants");
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
 const path = require('path');
-const fs = require('fs');
 const cors = require('cors');
 
 // Load Swagger file
 const swaggerFilePath = path.resolve(__dirname, 'swagger.yaml');
 let swaggerDocument;
+swaggerDocument = YAML.load(swaggerFilePath);
 
-if (fs.existsSync(swaggerFilePath)) {
-  swaggerDocument = YAML.load(swaggerFilePath);
-} else {
-  console.error('swagger.yaml file is missing');
-}
+// Serve static files (e.g., for Swagger UI)
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, {
+    customCssUrl: process.env.SWAGGER_RUL,
+  })
+);
 
 // Middleware setup
 app.use(express.json());
@@ -31,8 +34,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'], 
 }));
 
-// Serve static files (e.g., for Swagger UI)
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 // Mount API routes
 app.use("/api/v1", appRouter);

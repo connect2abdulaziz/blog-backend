@@ -477,6 +477,24 @@ paths:
           description: Unauthorized
         "404":
           description: Post not found
+  /posts/{id}/my-posts:
+    get:
+      tags:
+        - Posts
+      summary: Get all posts of a specific user
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: List of posts by the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+        "404":
+          description: User not found
 
   /comments:
     post:

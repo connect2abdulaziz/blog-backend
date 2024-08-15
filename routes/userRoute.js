@@ -11,6 +11,7 @@ const {
   changePassword,
   logout,
 } = require("../controllers/userController");
+const { getPosts } = require("../controllers/postController");
 const { authentication } = require("../middleware/auth");
 const router = require("express").Router();
 
