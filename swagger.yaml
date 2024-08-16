@@ -536,6 +536,8 @@ paths:
             default: 10
             minimum: 1
           description: Number of posts per page (optional, defaults to 10)
+      security:
+        - BearerAuth: []
       responses:
         "200":
           description: List of posts retrieved successfully
