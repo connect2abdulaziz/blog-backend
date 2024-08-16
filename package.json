@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "check-pg": "node -e \"console.log(require('pg').version)\"",
-    "start:dev": "nodemon app.js"
+    "dev": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
