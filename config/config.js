@@ -1,8 +1,5 @@
 import * as dotenv from 'dotenv';
-
 dotenv.config({ path: `${process.cwd()}/.env` });
-
-
 
 module.exports = {
   development: {
@@ -11,8 +8,8 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: "postgres",
-    seederStorage: 'sequelize',
+    dialect: process.env.DIALECT,
+    seederStorage: process.env.SEEDER_STORAGE,
   },
   test: {
     username: process.env.DB_USERNAME,
@@ -20,8 +17,8 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: "postgres",
-    seederStorage: 'sequelize',
+    dialect: process.env.DIALECT,
+    seederStorage: process.env.SEEDER_STORAGE,
   },
   production: {
     username: process.env.DB_USERNAME,
@@ -29,7 +26,7 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: "postgres",
-    seederStorage: 'sequelize',
+    dialect: process.env.DIALECT,
+    seederStorage: process.env.SEEDER_STORAGE,
   }
 }

@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import user from '../db/models/user.js';
+import User from '../db/models/user.js';
 import jwt from 'jsonwebtoken';
 import catchAsync from '../utils/errors/catchAsync.js';
 import AppError from '../utils/errors/appError.js';
@@ -28,7 +28,7 @@ const authentication = catchAsync(async (req, res, next) => {
   const tokenDetail = jwt.verify(idToken, process.env.JWT_SECRET_KEY);
 
   // Get the user information from the DB and add them to the req object
-  const freshUser = await user.findByPk(tokenDetail.id);
+  const freshUser = await User.findByPk(tokenDetail.id);
 
   if (!freshUser) {
     return next(

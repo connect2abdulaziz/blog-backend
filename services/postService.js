@@ -27,9 +27,9 @@ const createPostServices = async (userId, { categoryId, title, content, readTime
 };
 
 // Get all posts with optional search and user filter
-const getAllPostServices = async (searchBy, userId, { page = 1, limit = 10 }) => {
+const getAllPostServices = async ({searchBy, page = 1, limit = 10 , userId}) => {
   try {
-    console.log('Getting all posts', searchBy, userId);
+    console.log('Getting all posts', searchBy, userId, page, limit);
 
     // Define the base query options
     const queryOptions = {
@@ -60,9 +60,8 @@ const getAllPostServices = async (searchBy, userId, { page = 1, limit = 10 }) =>
         { '$category.tag$': { [Op.iLike]: `%${searchBy}%` } },
       ];
     }
-
     // Use pagination utility function
-    const paginatedPosts = await paginate(page, limit, queryOptions);
+    const paginatedPosts = await paginate(page, limit, queryOptions, Post);
     return paginatedPosts;
   } catch (error) {
     throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);

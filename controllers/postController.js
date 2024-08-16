@@ -4,6 +4,7 @@ import appSuccess from '../utils/errors/appSuccess.js';
 import {
   postSchema,
   updateSchema,
+  querySchema,
 } from '../utils/validations/postValidator.js';
 import {
   createPostServices,
@@ -14,7 +15,6 @@ import {
 } from '../services/postService.js';
 import {
   STATUS_CODE,
-  ERROR_MESSAGES,
   SUCCESS_MESSAGES,
 } from '../utils/constants/constants.js';
 
@@ -36,14 +36,14 @@ const createPost = catchAsync(async (req, res, next) => {
 
 // Get all posts
 const getPosts = catchAsync(async (req, res, next) => {
-  const {searchBy} = req.query 
-  const {id:userId} = req.user || {id:null};
-  console.log(userId, searchBy);
-  const posts = await getAllPostServices(searchBy, userId);
-  return res
-    .status(STATUS_CODE.OK)
-    .json(appSuccess(SUCCESS_MESSAGES.POSTS_RETRIEVED, posts));
+  const { error, value } = querySchema.validate(req.query);
+  if (error) return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
+  const { searchBy, page = 1, limit = 10 } = value;
+  const userId = req.user?.id || null;
+  const posts = await getAllPostServices({ searchBy, page, limit, userId});
+  res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.POSTS_RETRIEVED, posts));
 });
+
 
 // Get post by id
 const getPostById = catchAsync(async (req, res, next) => {

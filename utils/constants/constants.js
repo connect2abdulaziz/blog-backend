@@ -43,6 +43,8 @@ export const ERROR_MESSAGES = {
   POST_UPDATE_FAILED: 'Failed to update post. Please try again.',
   POST_DELETION_FAILED: 'Failed to delete post. Please try again.',
   POST_ID_REQUIRED: 'Post ID is required',
+  PAGE_INVALID: 'Page number must be a positive integer.',
+  LIMIT_INVALID: 'Limit must be a positive integer.',
 
   // Comment-related messages
   COMMENT_NOT_FOUND: 'Comment not found',

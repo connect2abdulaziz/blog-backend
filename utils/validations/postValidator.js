@@ -46,7 +46,20 @@ const updateSchema = Joi.object({
   }),
 });
 
+const querySchema = Joi.object({
+  searchBy: Joi.string().optional(),
+  page: Joi.number().integer().min(1).default(1).messages({
+    "number.base": ERROR_MESSAGES.PAGE_INVALID,
+    "number.min": ERROR_MESSAGES.PAGE_INVALID,
+  }),
+  limit: Joi.number().integer().min(1).default(10).messages({
+    "number.base": ERROR_MESSAGES.LIMIT_INVALID,
+    "number.min": ERROR_MESSAGES.LIMIT_INVALID,
+  }),
+});
+
 export {
   postSchema,
   updateSchema,
+  querySchema,
 };

@@ -350,7 +350,6 @@ paths:
           description: Bad request
         "401":
           description: Unauthorized
-
     get:
       tags:
         - Posts
@@ -360,10 +359,46 @@ paths:
           name: searchBy
           schema:
             type: string
-          description: Search posts by title or category
+          description: Search posts by title or category (optional)
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          description: Page number for pagination (optional, defaults to 1)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+          description: Number of posts per page (optional, defaults to 10)
       responses:
         "200":
-          description: List of posts
+          description: List of posts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Posts retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+        "400":
+          description: Bad request due to invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 
   /posts/{id}:
     get:
@@ -486,20 +521,45 @@ paths:
           name: searchBy
           schema:
             type: string
-          description: Search posts by title or category
-      security:
-        - BearerAuth: []
+          description: Search posts by title or category (optional)
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          description: Page number for pagination (optional, defaults to 1)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+          description: Number of posts per page (optional, defaults to 10)
       responses:
         "200":
-          description: List of posts by the user
+          description: List of posts retrieved successfully
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Post"
-        "404":
-          description: User not found
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Posts retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+        "400":
+          description: Bad request due to invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /comments:
     post:
