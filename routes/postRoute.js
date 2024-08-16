@@ -6,7 +6,7 @@ import {
   updatePostById,
   deletePostById,
 } from '../controllers/postController.js';
-import { authentication } from '../middleware/auth.js';
+import {authentication} from '../middleware/auth.js';
 
 const router = express.Router();
 
