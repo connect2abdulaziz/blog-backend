@@ -37,12 +37,12 @@ const getAllPostServices = async ({ searchBy, page = 1, limit = 10, userId }) =>
       include: [
         {
           model: User,
-          as: 'user',
+          as: 'User',
           attributes: ['id', 'firstName', 'lastName', 'thumbnail'],
         },
         {
           model: Category,
-          as: 'category',
+          as: 'Category',
           attributes: ['id', 'tag'],
         },
       ],
@@ -57,7 +57,7 @@ const getAllPostServices = async ({ searchBy, page = 1, limit = 10, userId }) =>
     if (searchBy) {
       queryOptions.where[Op.or] = [
         { title: { [Op.iLike]: `%${searchBy}%` } }, // Leverages index on `title`
-        { '$category.tag$': { [Op.iLike]: `%${searchBy}%` } },
+        { '$Category.tag$': { [Op.iLike]: `%${searchBy}%` } },
       ];
     }
 

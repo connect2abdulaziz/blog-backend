@@ -109,7 +109,7 @@ const postCommentsServices = async (postId, options) => {
     if (!postExists) {
       throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
-
+    console.log(options)
     // Define filter for parent comments
     const filter = { where: { postId, parentId: null }, include: [{ model: User, attributes: ['firstName', 'lastName', 'thumbnail'] }] };
 
