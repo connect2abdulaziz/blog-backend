@@ -799,7 +799,3 @@ paths:
       responses:
         "200":
           description: Total count of comments
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CommentCount"
