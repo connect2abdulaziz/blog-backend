@@ -528,7 +528,7 @@ paths:
         "404":
           description: Post not found
 
-    /posts/{id}/my-posts:
+  /posts/{id}/my-posts:
     get:
       tags:
         - Posts
