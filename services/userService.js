@@ -167,14 +167,14 @@ const deleteUserServices = async (userId) => {
   }
 };
 
-const changePasswordServices = async (userId, oldPassword, newPassword) => {
+const changePasswordServices = async (userId, {currentPassword, newPassword}) => {
   try {
     const user = await User.findByPk(userId);
     if (!user) {
       throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
-    if (!(await bcrypt.compare(oldPassword, user.password))) {
-      throw new AppError(ERROR_MESSAGES.INCORRECT_PASSWORD, STATUS_CODE.BAD_REQUEST);
+    if (!(await bcrypt.compare(currentPassword, user.password))) {
+      throw new AppError(ERROR_MESSAGES.INCORRECT_OLD_PASSWORD, STATUS_CODE.BAD_REQUEST);
     }
 
     const hashedPassword = await hashPassword(newPassword);
