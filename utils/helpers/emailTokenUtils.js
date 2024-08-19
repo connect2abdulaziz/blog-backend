@@ -17,8 +17,10 @@ const sendEmailWithToken = async ({
     // Generate a token with the user ID and expiration time
     const token = generateToken({ userId }, tokenExpiresIn);
 
-    // Construct the URL for verification or password reset
-    const url = `${process.env.FRONTEND_URL}${endpoint}?token=${token}`;
+    // Ensure the token is encoded
+    const encodedToken = encodeURIComponent(token);
+    const url = `${process.env.FRONTEND_URL}${endpoint}?token=${encodedToken}`;
+
 
     // Prepare the email content using the provided templates
     const textContent = textTemplate(url);
