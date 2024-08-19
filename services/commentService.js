@@ -4,7 +4,7 @@ import Post from "../db/models/post.js";
 import AppError from "../utils/errors/appError.js";
 import { ERROR_MESSAGES, STATUS_CODE } from "../utils/constants/constants.js";
 import sequelize  from '../config/database.js';
-import { Op } from 'sequelize';
+import paginate from '../utils/pagination.js';
 
 
 // Add a new comment to a post
@@ -63,60 +63,43 @@ const getTotalCommentCount = async (postId) => {
 };
 
 
-// Utility function to count all nested replies for a comment
-const countNestedReplies = async (commentId) => {
+
+const countNestedReplies = async (commentId, maxDepth = 2) => {
   try {
-    const nestedRepliesCount = await Comment.sequelize.query(`
+    // Create the recursive CTE query with dynamic depth
+    let query = `
       WITH RECURSIVE ReplyHierarchy AS (
-        SELECT id, parentId
-        FROM comments
-        WHERE parentId = :commentId
+        -- Base case: immediate replies (Level 1)
+        SELECT id, "parentId", 1 AS level
+        FROM comment
+        WHERE "parentId" = :commentId
+        
         UNION ALL
-        SELECT c.id, c.parentId
-        FROM comments c
-        INNER JOIN ReplyHierarchy rh ON c.parentId = rh.id
+        
+        -- Recursive case: replies to previous level replies
+        SELECT c.id, c."parentId", rh.level + 1
+        FROM comment c
+        INNER JOIN ReplyHierarchy rh ON c."parentId" = rh.id
+        WHERE rh.level < :maxDepth
       )
-      SELECT COUNT(*) as totalCount
+      SELECT COUNT(*) AS "totalCount"
       FROM ReplyHierarchy
-    `, {
-      replacements: { commentId },
+    `;
+    
+    // Execute the query with dynamic parameters
+    const nestedRepliesCount = await Comment.sequelize.query(query, {
+      replacements: { commentId, maxDepth },
       type: Comment.sequelize.QueryTypes.SELECT,
     });
-
-    return nestedRepliesCount[0].totalCount;
+    // Extract and return the total count
+    const { totalCount } = nestedRepliesCount[0];
+    return parseInt(totalCount, 10);
   } catch (error) {
+    console.error(`Error counting nested replies for commentId ${commentId}:`, error);
     throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
-
-
-
-const fetchComments = async (filter, options = {}) => {
-  try {
-    const { limit = 10, offset = 0, includeReplies = false } = options;
-
-    // Fetch comments with optional replies
-    const { count, rows: comments } = await Comment.findAndCountAll({
-      where: filter,
-      include: [
-        { model: User, attributes: ["id", "firstName", "thumbnail"] },
-        includeReplies && {
-          model: Comment,
-          attributes: ['id', 'content', 'createdAt', 'updatedAt'],
-          include: [{ model: User, attributes: ["id", "firstName", "thumbnail"] }]
-        }
-      ].filter(Boolean),
-      limit,
-      offset,
-      order: [['createdAt', 'ASC']],
-    });
-
-    return { count, comments };
-  } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
-  }
-};
 
 
 const postCommentsServices = async (postId, options) => {
@@ -127,23 +110,24 @@ const postCommentsServices = async (postId, options) => {
       throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
 
-    const filter = { postId, parentId: null };
-    const { count, comments } = await fetchComments(filter, options);
+    // Define filter for parent comments
+    const filter = { where: { postId, parentId: null }, include: [{ model: User, attributes: ['firstName', 'lastName', 'thumbnail'] }] };
+
+    // Use the paginate function
+    const { data: comments, totalItems: count } = await paginate(options.page, options.limit, filter, Comment);
 
     if (count === 0) return { comments: [], pagination: { limit: options.limit, offset: options.offset, totalCount: 0 } };
 
     // Get reply counts for parent comments
     const commentIds = comments.map(c => c.id);
-    const replyCountsResult = await sequelize.query(
-      `SELECT "parentId", COUNT(*) AS "repliesCount"
-       FROM "comment"
-       WHERE "parentId" IN (:commentIds)
-       GROUP BY "parentId"`,
-      { replacements: { commentIds }, type: sequelize.QueryTypes.SELECT }
-    );
+    const replyCountsResult = await Promise.all(commentIds.map(async id => ({
+      commentId: id,
+      repliesCount: await countNestedReplies(id)
+    })));
 
-    const replyCountsMap = replyCountsResult.reduce((map, { parentId, repliesCount }) => {
-      map[parentId] = repliesCount;
+    // Map reply counts to comments
+    const replyCountsMap = replyCountsResult.reduce((map, { commentId, repliesCount }) => {
+      map[commentId] = repliesCount;
       return map;
     }, {});
 
@@ -158,19 +142,46 @@ const postCommentsServices = async (postId, options) => {
   }
 };
 
+
 const getCommentRepliesServices = async (commentId, options) => {
   try {
+    // Check if the comment exists
     if (!(await Comment.findByPk(commentId))) {
       throw new AppError(ERROR_MESSAGES.COMMENT_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
-    const filter = { parentId: commentId };
-    const { count, comments: replies } = await fetchComments(filter, options);
 
-    return { replies: replies.map(reply => reply.toJSON()), pagination: { limit: options.limit, offset: options.offset, totalCount: count } };
+    // Define filter for replies
+    const filter = { where: { parentId: commentId }, include: [{ model: User, attributes: ['firstName', 'lastName', 'thumbnail'] }] };
+
+    // Use the paginate function
+    const { data: replies, totalItems: count } = await paginate(options.page, options.limit, filter, Comment);
+
+    // Get nested replies count for each reply
+    const replyIds = replies.map(r => r.id);
+    const nestedRepliesCounts = await Promise.all(replyIds.map(async id => ({
+      replyId: id,
+      nestedRepliesCount: await countNestedReplies(id)
+    })));
+
+    // Map nested replies counts to replies
+    const nestedRepliesMap = nestedRepliesCounts.reduce((map, { replyId, nestedRepliesCount }) => {
+      map[replyId] = nestedRepliesCount;
+      return map;
+    }, {});
+
+    const repliesWithCounts = replies.map(r => ({
+      ...r.toJSON(),
+      nestedRepliesCount: nestedRepliesMap[r.id] || 0
+    }));
+
+    return { replies: repliesWithCounts, pagination: { limit: options.limit, page: options.page, totalCount: count } };
   } catch (error) {
     throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
+
+
+
 
 
 

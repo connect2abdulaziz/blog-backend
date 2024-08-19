@@ -49,8 +49,8 @@ const postComments = catchAsync(async (req, res, next) => {
   if (error) {
     return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
   }
-  const { limit, offset, includeReplies } = value;
-  const comments = await postCommentsServices(postId, { limit, offset, includeReplies });
+  const { limit, page, includeReplies } = value;
+  const comments = await postCommentsServices(postId, { limit, page, includeReplies });
   res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.COMMENTS_RETRIEVED, comments));
 });
 
@@ -61,8 +61,8 @@ const getCommentReplies = catchAsync(async (req, res, next) => {
   if (error) {
     return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
   }
-  const { limit, offset } = value;
-  const replies = await getCommentRepliesServices(commentId, { limit, offset });
+  const { limit, page } = value;
+  const replies = await getCommentRepliesServices(commentId, { limit, page });
   return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.REPLIES_RETRIEVED, replies));
 });
 
