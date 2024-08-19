@@ -3,11 +3,13 @@ import User from "../db/models/user.js";
 import Post from "../db/models/post.js";
 import AppError from "../utils/errors/appError.js";
 import { ERROR_MESSAGES, STATUS_CODE } from "../utils/constants/constants.js";
-import paginate from "../utils/pagination.js";
+import sequelize  from '../config/database.js';
+import { Op } from 'sequelize';
 
 
 // Add a new comment to a post
 const addCommentServices = async ({ postId, parentId, content }, userId) => {
+  const transaction = await sequelize.transaction();
   try {
     // Check if parentId is provided and valid
     if (parentId && !(await Comment.findByPk(parentId))) {
@@ -22,16 +24,15 @@ const addCommentServices = async ({ postId, parentId, content }, userId) => {
       postId,
       parentId: parentId || null,
       content,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    }, { transaction });
 
     // Fetch the user associated with the comment
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(userId, { transaction });
     if (!user) {
       throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
 
+    await transaction.commit();
     return {
       ...newComment.toJSON(),
       user: {
@@ -40,65 +41,138 @@ const addCommentServices = async ({ postId, parentId, content }, userId) => {
       },
     };
   } catch (error) {
+    await transaction.rollback();
     throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.BAD_REQUEST);
   }
 };
 
-// Get comments by post ID with hierarchical structure and pagination
-const postCommentsServices = async (postId, queryOptions) => {
+
+// Get total comment count for a post
+const getTotalCommentCount = async (postId) => {
   try {
     if (!(await Post.findByPk(postId))) {
       throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
-
-    const { data: comments, pagination } = await paginate(Comment, {
+    const count = await Comment.count({
       where: { postId },
-      include: [
-        {
-          model: User,
-          attributes: ["id", "firstName", "thumbnail"],
-        },
-      ],
-      order: [["createdAt", "ASC"]],
-      ...queryOptions,
     });
-
-    // Function to build a hierarchical structure
-    const buildHierarchy = (comments) => {
-      const commentMap = new Map();
-      const rootComments = [];
-
-      // Create a map of all comments by ID for quick access
-      comments.forEach((comment) => {
-        commentMap.set(comment.id, { ...comment.toJSON(), replies: [] });
-      });
-
-      // Build the hierarchy
-      comments.forEach((comment) => {
-        if (comment.parentId) {
-          const parentComment = commentMap.get(comment.parentId);
-          if (parentComment) {
-            parentComment.replies.push(commentMap.get(comment.id));
-          }
-        } else {
-          rootComments.push(commentMap.get(comment.id));
-        }
-      });
-
-      return rootComments;
-    };
-
-    const hierarchicalComments = buildHierarchy(comments);
-
-    // Return hierarchical comments with pagination metadata
-    return {
-      comments: hierarchicalComments,
-      pagination,
-    };
+    return count;
   } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.BAD_REQUEST);
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
+
+
+// Utility function to count all nested replies for a comment
+const countNestedReplies = async (commentId) => {
+  try {
+    const nestedRepliesCount = await Comment.sequelize.query(`
+      WITH RECURSIVE ReplyHierarchy AS (
+        SELECT id, parentId
+        FROM comments
+        WHERE parentId = :commentId
+        UNION ALL
+        SELECT c.id, c.parentId
+        FROM comments c
+        INNER JOIN ReplyHierarchy rh ON c.parentId = rh.id
+      )
+      SELECT COUNT(*) as totalCount
+      FROM ReplyHierarchy
+    `, {
+      replacements: { commentId },
+      type: Comment.sequelize.QueryTypes.SELECT,
+    });
+
+    return nestedRepliesCount[0].totalCount;
+  } catch (error) {
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+  }
+};
+
+
+
+
+const fetchComments = async (filter, options = {}) => {
+  try {
+    const { limit = 10, offset = 0, includeReplies = false } = options;
+
+    // Fetch comments with optional replies
+    const { count, rows: comments } = await Comment.findAndCountAll({
+      where: filter,
+      include: [
+        { model: User, attributes: ["id", "firstName", "thumbnail"] },
+        includeReplies && {
+          model: Comment,
+          attributes: ['id', 'content', 'createdAt', 'updatedAt'],
+          include: [{ model: User, attributes: ["id", "firstName", "thumbnail"] }]
+        }
+      ].filter(Boolean),
+      limit,
+      offset,
+      order: [['createdAt', 'ASC']],
+    });
+
+    return { count, comments };
+  } catch (error) {
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+  }
+};
+
+
+const postCommentsServices = async (postId, options) => {
+  try {
+    // Check if the post exists
+    const postExists = await Post.findByPk(postId);
+    if (!postExists) {
+      throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
+    }
+
+    const filter = { postId, parentId: null };
+    const { count, comments } = await fetchComments(filter, options);
+
+    if (count === 0) return { comments: [], pagination: { limit: options.limit, offset: options.offset, totalCount: 0 } };
+
+    // Get reply counts for parent comments
+    const commentIds = comments.map(c => c.id);
+    const replyCountsResult = await sequelize.query(
+      `SELECT "parentId", COUNT(*) AS "repliesCount"
+       FROM "comment"
+       WHERE "parentId" IN (:commentIds)
+       GROUP BY "parentId"`,
+      { replacements: { commentIds }, type: sequelize.QueryTypes.SELECT }
+    );
+
+    const replyCountsMap = replyCountsResult.reduce((map, { parentId, repliesCount }) => {
+      map[parentId] = repliesCount;
+      return map;
+    }, {});
+
+    const commentsWithCounts = comments.map(c => ({
+      ...c.toJSON(),
+      repliesCount: replyCountsMap[c.id] || 0
+    }));
+
+    return { comments: commentsWithCounts, pagination: { limit: options.limit, offset: options.offset, totalCount: count } };
+  } catch (error) {
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+  }
+};
+
+const getCommentRepliesServices = async (commentId, options) => {
+  try {
+    if (!(await Comment.findByPk(commentId))) {
+      throw new AppError(ERROR_MESSAGES.COMMENT_NOT_FOUND, STATUS_CODE.NOT_FOUND);
+    }
+    const filter = { parentId: commentId };
+    const { count, comments: replies } = await fetchComments(filter, options);
+
+    return { replies: replies.map(reply => reply.toJSON()), pagination: { limit: options.limit, offset: options.offset, totalCount: count } };
+  } catch (error) {
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+  }
+};
+
+
 
 // Update an existing comment
 const updateCommentServices = async ({ content }, { commentId, userId }) => {
@@ -115,36 +189,6 @@ const updateCommentServices = async ({ content }, { commentId, userId }) => {
       updatedAt: new Date(),
     });
     return comment;
-  } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.BAD_REQUEST);
-  }
-};
-
-// Function to get all replies on a comment with pagination
-const getCommentRepliesServices = async (commentId, queryOptions) => {
-  try {
-    const comment = await Comment.findByPk(commentId);
-    if (!comment) {
-      throw new AppError(ERROR_MESSAGES.COMMENT_NOT_FOUND, STATUS_CODE.NOT_FOUND);
-    }
-
-    const { data: replies, pagination } = await paginate(Comment, {
-      where: { parentId: commentId },
-      include: [
-        {
-          model: User,
-          attributes: ["id", "firstName", "thumbnail"],
-        },
-      ],
-      order: [["createdAt", "ASC"]],
-      ...queryOptions,
-    });
-
-    // Return replies with pagination metadata
-    return {
-      replies,
-      pagination,
-    };
   } catch (error) {
     throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.BAD_REQUEST);
   }
@@ -173,4 +217,5 @@ export {
   updateCommentServices,
   deleteCommentServices,
   getCommentRepliesServices,
+  getTotalCommentCount,
 };

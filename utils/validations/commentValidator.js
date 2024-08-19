@@ -32,7 +32,21 @@ const updateCommentSchema = Joi.object({
   }),
 });
 
+const queryCommentSchema = Joi.object({
+  limit: Joi.number().integer().min(1).default(10),
+  offset: Joi.number().integer().min(0).default(0),
+  includeReplies: Joi.boolean().default(false),
+});
+
+// Query validation schema for getting comment replies
+const queryRepliesSchema = Joi.object({
+  limit: Joi.number().integer().min(1).default(10),
+  offset: Joi.number().integer().min(0).default(0),
+});
+
 export {
+  queryCommentSchema,
+  queryRepliesSchema,
   commentSchema,
   updateCommentSchema,
 };

@@ -2,10 +2,9 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../../config/database.js';
 
+class Category extends Model {}
 
-const Category = sequelize.define(
-  'category',
-  {
+Category.init({
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -30,7 +29,7 @@ const Category = sequelize.define(
     tableName: 'category',
     freezeTableName: true,
     timestamps: false, 
-    modelName: 'category',
+    modelName: 'Category',
   }
 );
 

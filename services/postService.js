@@ -27,13 +27,13 @@ const createPostServices = async (userId, { categoryId, title, content, readTime
 };
 
 // Get all posts with optional search and user filter
-const getAllPostServices = async ({searchBy, page = 1, limit = 10 , userId}) => {
+const getAllPostServices = async ({ searchBy, page = 1, limit = 10, userId }) => {
   try {
     console.log('Getting all posts', searchBy, userId, page, limit);
 
     // Define the base query options
     const queryOptions = {
-      order: [['createdAt', 'DESC']],
+      order: [['createdAt', 'DESC']], // Index on `createdAt` can optimize ordering
       include: [
         {
           model: User,
@@ -51,15 +51,16 @@ const getAllPostServices = async ({searchBy, page = 1, limit = 10 , userId}) => 
 
     // Apply filters if provided
     if (userId) {
-      queryOptions.where.userId = userId;
+      queryOptions.where.userId = userId; // Leverages index on `userId`
     }
 
     if (searchBy) {
       queryOptions.where[Op.or] = [
-        { title: { [Op.iLike]: `%${searchBy}%` } },
+        { title: { [Op.iLike]: `%${searchBy}%` } }, // Leverages index on `title`
         { '$category.tag$': { [Op.iLike]: `%${searchBy}%` } },
       ];
     }
+
     // Use pagination utility function
     const paginatedPosts = await paginate(page, limit, queryOptions, Post);
     return paginatedPosts;
@@ -116,7 +117,7 @@ const myPostsServices = async (userId, { page = 1, limit = 10 }) => {
 
     // Define the base query options
     const queryOptions = {
-      where: { userId },
+      where: { userId }, // Leverages index on `userId`
       include: [
         {
           model: User,
@@ -129,7 +130,7 @@ const myPostsServices = async (userId, { page = 1, limit = 10 }) => {
           attributes: ['id', 'tag'],
         },
       ],
-      order: [['createdAt', 'DESC']],
+      order: [['createdAt', 'DESC']], // Index on `createdAt` can optimize ordering
     };
 
     // Use pagination utility function
@@ -165,7 +166,7 @@ const updatePostServices = async (postId, userId, { categoryId, title, content, 
         updatedAt: new Date(),
       },
       {
-        where: { id: postId, userId },
+        where: { id: postId, userId }, 
       }
     );
 
@@ -189,7 +190,7 @@ const deletePostServices = async ({ postId, userId }) => {
       throw new AppError(ERROR_MESSAGES.UNAUTHORIZED, STATUS_CODE.UNAUTHORIZED);
     }
 
-    await Post.destroy({ where: { id: postId, userId } });
+    await Post.destroy({ where: { id: postId, userId } }); 
     return postId;
   } catch (error) {
     throw new AppError(error.message || ERROR_MESSAGES.POST_DELETION_FAILED, STATUS_CODE.INTERNAL_SERVER_ERROR);

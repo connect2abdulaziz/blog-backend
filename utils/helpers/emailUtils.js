@@ -1,12 +1,12 @@
 import nodemailer from 'nodemailer';
-const { EMAIL_FROM, EMAIL_USER, EMAIL_PASS } = process.env;
 
+const { EMAIL_FROM, EMAIL_PASSWORD_FORGOT_PASSWORD } = process.env;
 
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
-    user: EMAIL_USER,
-    pass: EMAIL_PASS,
+    user: EMAIL_FROM,
+    pass: EMAIL_PASSWORD_FORGOT_PASSWORD,
   },
 });
 
@@ -28,4 +28,4 @@ const sendEmail = async ({ to, subject, text, html }) => {
   }
 };
 
-export default sendEmail
+export default sendEmail;

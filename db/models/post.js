@@ -2,11 +2,11 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../../config/database.js'; 
 import Category from './category.js'; 
-import Comment from './comment.js'; 
+import User from './user.js';
 
-const Post = sequelize.define(
-  'post',
-  {
+class Post extends Model {}
+
+Post.init({
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -22,7 +22,7 @@ const Post = sequelize.define(
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE'
     },
-    categoryId:{
+    categoryId: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
@@ -40,25 +40,27 @@ const Post = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    readTime:{
+    readTime: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    image:{
+    image: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    thumbnail:{
+    thumbnail: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
     createdAt: {
       allowNull: false,
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW 
     },
     updatedAt: {
       allowNull: false,
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW 
     }
   },
   {
@@ -66,15 +68,35 @@ const Post = sequelize.define(
     tableName: 'post',
     freezeTableName: true,
     timestamps: true, 
-    modelName: 'post',
+    modelName: 'Post',
+    indexes: [
+      {
+        unique: false,
+        fields: ['userId'],
+        name: 'idx_post_userId'
+      },
+      {
+        unique: false,
+        fields: ['categoryId'],
+        name: 'idx_post_categoryId'
+      },
+      {
+        unique: false,
+        fields: ['title'],
+        name: 'idx_post_title'
+      },
+      {
+        name: 'idx_post_createdAt',
+        fields: ['createdAt'],
+      },
+    ]
   }
 );
 
-
 // Association definition
-Category.hasMany(Post, {foreignKey: 'categoryId',});
-Post.belongsTo(Category, { foreignKey: 'categoryId',});
-Post.hasMany(Comment, {foreignKey: 'postId',});
-Comment.belongsTo(Post, { foreignKey: 'postId',});
+Category.hasMany(Post, { foreignKey: 'categoryId' });
+Post.belongsTo(Category, { foreignKey: 'categoryId' });
+User.hasMany(Post, { foreignKey: 'userId' });
+Post.belongsTo(User, { foreignKey: 'userId' });
 
 export default Post;

@@ -350,6 +350,7 @@ paths:
           description: Bad request
         "401":
           description: Unauthorized
+
     get:
       tags:
         - Posts
@@ -392,6 +393,21 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Post'
+                  pagination:
+                    type: object
+                    properties:
+                      currentPage:
+                        type: integer
+                        example: 1
+                      totalPages:
+                        type: integer
+                        example: 10
+                      totalItems:
+                        type: integer
+                        example: 100
+                      itemsPerPage:
+                        type: integer
+                        example: 10
         "400":
           description: Bad request due to invalid query parameters
           content:
@@ -511,12 +527,19 @@ paths:
           description: Unauthorized
         "404":
           description: Post not found
-  /posts/{id}/my-posts:
+
+    /posts/{id}/my-posts:
     get:
       tags:
         - Posts
       summary: Get all posts of a specific user
       parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            description: The unique identifier of the user
         - in: query
           name: searchBy
           schema:
@@ -552,6 +575,26 @@ paths:
                   message:
                     type: string
                     example: Posts retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  pagination:
+                    type: object
+                    properties:
+                      currentPage:
+                        type: integer
+                        example: 1
+                      totalPages:
+                        type: integer
+                        example: 10
+                      totalItems:
+                        type: integer
+                        example: 100
+                      itemsPerPage:
+                        type: integer
+                        example: 10
+        "400":
           description: Bad request due to invalid query parameters
           content:
             application/json:
@@ -588,26 +631,114 @@ paths:
           required: true
           schema:
             type: integer
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          description: Page number for pagination (optional, defaults to 1)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+          description: Number of comments per page (optional, defaults to 10)
       responses:
         "200":
           description: List of comments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Comments retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Comment'
+                  pagination:
+                    type: object
+                    properties:
+                      currentPage:
+                        type: integer
+                        example: 1
+                      totalPages:
+                        type: integer
+                        example: 10
+                      totalItems:
+                        type: integer
+                        example: 100
+                      itemsPerPage:
+                        type: integer
+                        example: 10
+
 
   /comments/{id}/replies:
     get:
       tags:
         - Comments
       summary: Get all replies for a specific comment
-      security:
-        - BearerAuth: []
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          description: Page number for pagination (optional, defaults to 1)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+          description: Number of replies per page (optional, defaults to 10)
       responses:
         "200":
           description: List of replies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Replies retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Comment'
+                  pagination:
+                    type: object
+                    properties:
+                      currentPage:
+                        type: integer
+                        example: 1
+                      totalPages:
+                        type: integer
+                        example: 10
+                      totalItems:
+                        type: integer
+                        example: 100
+                      itemsPerPage:
+                        type: integer
+                        example: 10
+
 
   /comments/{id}:
     patch:
@@ -653,3 +784,22 @@ paths:
           description: Comment deleted successfully
         "401":
           description: Unauthorized
+          
+  /comments/{postId}/count:
+    get:
+      tags:
+        - Comments
+      summary: Get the total count of comments for a specific post
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Total count of comments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentCount"

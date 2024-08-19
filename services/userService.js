@@ -19,7 +19,6 @@ const createUserServices = async ({ firstName, lastName, email, password }) => {
     if (alreadyRegistered) {
       throw new AppError(ERROR_MESSAGES.EMAIL_ALREADY_EXISTS, STATUS_CODE.BAD_REQUEST);
     }
-
     const hashedPassword = await hashPassword(password);
     const newUser = await User.create({
       firstName,
@@ -28,7 +27,6 @@ const createUserServices = async ({ firstName, lastName, email, password }) => {
       password: hashedPassword,
       verified: false,
     });
-
     await sendEmailWithToken({
       userId: newUser.id,
       email,
@@ -43,7 +41,7 @@ const createUserServices = async ({ firstName, lastName, email, password }) => {
     cleanedResult.token = generateToken({ id: newUser.id });
     return cleanedResult;
   } catch (error) {
-    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 

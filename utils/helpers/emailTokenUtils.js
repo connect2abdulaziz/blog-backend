@@ -33,7 +33,7 @@ const sendEmailWithToken = async ({
     });
 
   } catch (error) {
-    throw new AppError(ERROR_MESSAGES.EMAIL_SEND_FAILED, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(error.message || ERROR_MESSAGES.EMAIL_SEND_FAILED, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
