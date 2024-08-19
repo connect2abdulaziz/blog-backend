@@ -23,8 +23,8 @@ const EMAIL_TEMPLATES = {
 };
 
 const EMAIL_CONSTANTS = {
-  VERIFY_EMAIL_ENDPOINT: '/api/v1/user/verify-email',
-  RESET_PASSWORD_ENDPOINT: '/api/v1/users/reset-password',
+  VERIFY_EMAIL_ENDPOINT: '/verify-email',
+  RESET_PASSWORD_ENDPOINT: '/reset-password',
   VERIFY_EMAIL_TOKEN_EXPIRATION: '1h',
   RESET_PASSWORD_TOKEN_EXPIRATION: '5m',
 };
