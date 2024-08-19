@@ -410,10 +410,6 @@ paths:
                         example: 10
         "400":
           description: Bad request due to invalid query parameters
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 
 
   /posts/{id}:
@@ -596,10 +592,7 @@ paths:
                         example: 10
         "400":
           description: Bad request due to invalid query parameters
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+
 
   /comments:
     post:
