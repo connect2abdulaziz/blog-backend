@@ -84,7 +84,7 @@ const verifyEmailServices = async (token) => {
     await User.update({ verified: true }, { where: { id: user.id } });
     return user.id;
   } catch (error) {
-    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -116,7 +116,7 @@ const resetPasswordServices = async ({ password }, token) => {
     await user.save();
     return user.id;
   } catch (error) {
-    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -136,7 +136,7 @@ const getUserByIdServices = async (id) => {
     }
     return user;
   } catch (error) {
-    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -151,7 +151,7 @@ const updateUserServices = async (userId, updates) => {
     const { password, ...cleanedResult } = user.toJSON();
     return cleanedResult;
   } catch (error) {
-    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -163,7 +163,7 @@ const deleteUserServices = async (userId) => {
     }
     await user.destroy();
   } catch (error) {
-    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -182,7 +182,7 @@ const changePasswordServices = async (userId, oldPassword, newPassword) => {
     await user.save();
     return user.id;
   } catch (error) {
-    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -192,7 +192,7 @@ const findByEmail = async (email) => {
     const exists = await User.findOne({ where: { email } });
     return exists;
   } catch (error) {
-    throw new AppError(
+    throw new AppError( error.message || 
       ERROR_MESSAGES.USER_NOT_FOUND,
       STATUS_CODE.INTERNAL_SERVER_ERROR
     );

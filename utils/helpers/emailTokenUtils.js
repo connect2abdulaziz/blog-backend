@@ -17,10 +17,10 @@ const sendEmailWithToken = async ({
     // Generate a token with the user ID and expiration time
     const token = generateToken({ userId }, tokenExpiresIn);
 
-    // Ensure the token is encoded
+    // Ensure the token is encoded (though not strictly necessary for path segments)
     const encodedToken = encodeURIComponent(token);
-    const url = `${process.env.FRONTEND_URL}${endpoint}?token=${encodedToken}`;
-
+    // Construct the URL with the token in the path
+    const url = `${process.env.FRONTEND_URL}${endpoint}/${encodedToken}`;
 
     // Prepare the email content using the provided templates
     const textContent = textTemplate(url);
