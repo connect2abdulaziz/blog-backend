@@ -1,4 +1,5 @@
 import express from 'express';
+import helmet from 'helmet';
 import sequelize from './config/database.js';
 import appRouter from './routes/index.js';
 import catchAsync from './utils/errors/catchAsync.js';
