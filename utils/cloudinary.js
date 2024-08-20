@@ -38,7 +38,4 @@ const generateThumbnail = (publicId, options = {}) => {
   });
 };
 
-module.exports = {
-  uploadImage,
-  generateThumbnail,
-};
+export { uploadImage, generateThumbnail };

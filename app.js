@@ -35,7 +35,8 @@ app.use(
 app.use(express.json());
 
 // Middleware setup for multipart upload
-app.use(express.urlencoded({ extended: true, limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.static('public'));
 app.use(helmet());
 
 // Apply CORS middleware
