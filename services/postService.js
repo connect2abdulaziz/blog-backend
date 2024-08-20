@@ -100,7 +100,7 @@ const getPostServices = async (postId) => {
       include: [
         {
           model: User,
-          as: 'Uer',
+          as: 'User',
           attributes: ['id', 'firstName', 'lastName', 'email'],
         },
         {
