@@ -108,18 +108,6 @@ const getPostServices = async (postId) => {
           as: 'Category',
           attributes: ['id', 'tag'],
         },
-        {
-          model: Comment,
-          as: 'Comments',
-          include: [
-            {
-              model: User,
-              as: 'User',
-              attributes: ['id', 'firstName', 'lastName', 'thumbnail'],
-            },
-          ],
-          attributes: ['id', 'content', 'createdAt'],
-        },
       ],
     });
 
