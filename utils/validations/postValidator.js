@@ -47,7 +47,7 @@ const updateSchema = Joi.object({
 });
 
 const querySchema = Joi.object({
-  searchBy: Joi.string().optional(),
+  searchBy: Joi.string().allow('').optional(), 
   page: Joi.number().integer().min(1).default(1).messages({
     "number.base": ERROR_MESSAGES.PAGE_INVALID,
     "number.min": ERROR_MESSAGES.PAGE_INVALID,
@@ -57,6 +57,7 @@ const querySchema = Joi.object({
     "number.min": ERROR_MESSAGES.LIMIT_INVALID,
   }),
 });
+
 
 export {
   postSchema,
