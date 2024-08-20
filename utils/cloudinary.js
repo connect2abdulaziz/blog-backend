@@ -38,4 +38,5 @@ const generateThumbnail = (publicId, options = {}) => {
   });
 };
 
+
 export { uploadImage, generateThumbnail };
