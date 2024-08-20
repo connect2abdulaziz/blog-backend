@@ -1,21 +1,18 @@
-import fs from 'fs-extra';
 import path from 'path';
 import multer from 'multer';
+import { fileURLToPath } from 'url';
 
-// Define the path for the uploads directory
-const uploadDir = path.join(__dirname, '../uploads');
+// Resolve __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Create the directory if it doesn't exist
-fs.ensureDirSync(uploadDir);
-
-// Configure multer to use the uploads directory
+// Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir);
+    cb(null, path.join(__dirname, 'uploads')); // Adjust path as needed
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   },
 });
 
