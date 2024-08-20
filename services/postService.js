@@ -9,14 +9,13 @@ import paginate from '../utils/pagination.js';
 import { uploadImage, generateThumbnail } from '../utils/cloudinary.js';
 
 /**
- * Creates a new post and uploads its image to Cloudinary.
+ * Service to create a new post and upload its image to Cloudinary.
  * @param {string} userId - The ID of the user creating the post.
  * @param {object} postData - The data of the post to be created.
  * @param {object} file - The image file to be uploaded.
  * @returns {Promise<Post>} - The newly created post.
  * @throws {AppError} - If an error occurs during creation or upload.
  */
-
 const createPostServices = async (userId, { categoryId, title, content, readTime }, file) => {
   try {
     console.log('--- Starting createPostServices ---');
@@ -66,7 +65,6 @@ const createPostServices = async (userId, { categoryId, title, content, readTime
     throw new AppError(error.message || 'An error occurred while creating the post.', 500);
   }
 };
-
 
 
 
