@@ -16,19 +16,35 @@ import { uploadImage, generateThumbnail } from '../utils/cloudinary.js';
  * @returns {Promise<Post>} - The newly created post.
  * @throws {AppError} - If an error occurs during creation or upload.
  */
+
 const createPostServices = async (userId, { categoryId, title, content, readTime }, file) => {
   try {
+    console.log('--- Starting createPostServices ---');
+    console.log('User ID:', userId);
+    console.log('Post Data:', { categoryId, title, content, readTime });
+    console.log('File Object:', file);
+
     let imageUrl = null;
     let thumbnailUrl = null;
 
-    if (file) {
+    if (file && file.path) {
+      console.log('File path:', file.path);
+
       // Upload the image to Cloudinary
       imageUrl = await uploadImage(file.path);
+      console.log('Image uploaded to Cloudinary:', imageUrl);
       
-      // Generate the thumbnail
+      // Extract the public ID from the image URL
       const publicId = imageUrl.split('/').slice(-2).join('/').split('.')[0];
+      console.log('Extracted public ID:', publicId);
+      
+      // Generate the thumbnail URL
       thumbnailUrl = generateThumbnail(publicId);
+      console.log('Generated thumbnail URL:', thumbnailUrl);
     }
+
+    console.log('Final Image URL:', imageUrl);
+    console.log('Final Thumbnail URL:', thumbnailUrl);
 
     // Create the new post with or without the image and thumbnail
     const newPost = await Post.create({
@@ -41,11 +57,18 @@ const createPostServices = async (userId, { categoryId, title, content, readTime
       thumbnail: thumbnailUrl || null,
     });
 
+    console.log('New Post Created:', newPost);
+    console.log('--- End of createPostServices ---');
+
     return newPost;
   } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.CONTENT_REQUIRED, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    console.error('Error in createPostServices:', error);
+    throw new AppError(error.message || 'An error occurred while creating the post.', 500);
   }
 };
+
+
+
 
 // Get all posts with optional search and user filter
 const getAllPostServices = async ({ searchBy, page = 1, limit = 10, userId }) => {
