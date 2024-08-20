@@ -26,20 +26,30 @@ const createPostServices = async (userId, { categoryId, title, content, readTime
     let imageUrl = null;
     let thumbnailUrl = null;
 
-    if (file && file.path) {
-      console.log('File path:', file.path);
+    if (file && file.buffer) {
+      console.log('Uploading file to Cloudinary...');
 
-      // Upload the image to Cloudinary
-      imageUrl = await uploadImage(file.path);
-      console.log('Image uploaded to Cloudinary:', imageUrl);
-      
-      // Extract the public ID from the image URL
-      const publicId = imageUrl.split('/').slice(-2).join('/').split('.')[0];
-      console.log('Extracted public ID:', publicId);
-      
-      // Generate the thumbnail URL
+      // Upload the image to Cloudinary using the buffer
+      const uploadResult = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: 'posts' },
+          (error, result) => {
+            if (error) {
+              return reject(new AppError('Error uploading image to Cloudinary', 500));
+            }
+            resolve(result);
+          }
+        );
+
+        // Pipe the file buffer into Cloudinary's upload stream
+        file.stream.pipe(uploadStream);
+      });
+
+      imageUrl = uploadResult.secure_url;
+      const publicId = uploadResult.public_id;
+
+      // Generate thumbnail
       thumbnailUrl = generateThumbnail(publicId);
-      console.log('Generated thumbnail URL:', thumbnailUrl);
     }
 
     console.log('Final Image URL:', imageUrl);
