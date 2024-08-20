@@ -1,5 +1,4 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { uploadImage, generateThumbnail } from '../utils/cloudinary.js';
 
 // Configure Cloudinary
 cloudinary.config({
