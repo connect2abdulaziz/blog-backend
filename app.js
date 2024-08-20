@@ -5,12 +5,11 @@ import catchAsync from './utils/errors/catchAsync.js';
 import AppError from './utils/errors/appError.js';
 import globalErrorHandler from './utils/errors/errorHandler.js';
 import { STATUS_CODE } from './utils/constants/constants.js';
-
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import cors from 'cors';
+import corsHandler from './middleware/corsHandler.js'; 
 
 // Resolve the __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -34,11 +33,9 @@ app.use(
 
 // Middleware setup
 app.use(express.json());
-app.use(cors({
-  origin: "*", 
-  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], 
-  allowedHeaders: ['Content-Type', 'Authorization'], 
-}));
+
+// Apply CORS middleware
+app.use(corsHandler); 
 
 // Mount API routes
 app.use("/api/v1", appRouter);

@@ -16,7 +16,7 @@ import { uploadImage, generateThumbnail } from '../utils/cloudinary.js';
  * @returns {Promise<Post>} - The newly created post.
  * @throws {AppError} - If an error occurs during creation or upload.
  */
-const createPostServices = async (userId, { categoryId, title, content, readTime, image }, file) => {
+const createPostServices = async (userId, { categoryId, title, content, readTime }, file) => {
   try {
     let imageUrl = null;
     let thumbnailUrl = null;
