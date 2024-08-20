@@ -11,8 +11,12 @@ const __dirname = path.dirname(__filename);
 const uploadDir = path.join(__dirname, '../uploads');
 
 // Ensure the uploads directory exists
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (error) {
+  console.error('Error creating upload directory:', error);
 }
 
 // Configure multer storage
@@ -21,6 +25,7 @@ const storage = multer.diskStorage({
     cb(null, uploadDir); // Use the uploadDir variable
   },
   filename: (req, file, cb) => {
+    // Create a unique filename
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   },
 });
