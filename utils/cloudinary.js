@@ -35,10 +35,13 @@ const uploadImageToCloudinary = async (filePath, folder = 'posts', options = {})
  * @returns {string} - The URL of the thumbnail.
  */
 const generateThumbnailUrl = (publicId, options = {}) => {
+  // Ensure options is an array or an empty array
+  const transformations = Array.isArray(options) ? options : [];
+  
   return cloudinary.url(publicId, {
     transformation: [
       { width: 200, height: 150, crop: 'limit' },
-      ...options,
+      ...transformations,
     ],
   });
 };
