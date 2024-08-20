@@ -1,32 +1,21 @@
-import path from 'path';
 import multer from 'multer';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
 
-// Resolve __dirname equivalent
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET_KEY,
+});
 
-// Directory for uploads
-const uploadDir = path.join(__dirname, '../uploads');
-
-// Ensure the uploads directory exists
-try {
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-} catch (error) {
-  console.error('Error creating upload directory:', error);
-}
-
-// Configure multer storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir); // Use the uploadDir variable
-  },
-  filename: (req, file, cb) => {
-    // Create a unique filename
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+// Configure Multer to use Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'uploads', // The folder where images will be stored in Cloudinary
+    format: async (req, file) => 'jpeg', // supports promises as well
+    public_id: (req, file) => 'image-' + Date.now(), // Generate unique file names
   },
 });
 
