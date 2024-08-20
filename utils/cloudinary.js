@@ -1,12 +1,13 @@
-import { v2 as cloudinary} from 'cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
+import { uploadImage, generateThumbnail } from '../utils/cloudinary.js';
 
+// Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET_KEY,
   secure: true,
 });
-
 
 /**
  * Uploads an image to Cloudinary and returns the URL of the uploaded image.
@@ -15,12 +16,17 @@ cloudinary.config({
  * @param {object} options - Additional options for Cloudinary upload.
  * @returns {Promise<string>} - The URL of the uploaded image.
  */
-const uploadImage = async (filePath, folder = 'posts', options = {}) => {
-  const result = await cloudinary.uploader.upload(filePath, {
-    folder,
-    ...options,
-  });
-  return result.secure_url;
+const uploadImageToCloudinary = async (filePath, folder = 'posts', options = {}) => {
+  try {
+    const result = await cloudinary.uploader.upload(filePath, {
+      folder,
+      ...options,
+    });
+    return result.secure_url;
+  } catch (error) {
+    console.error('Error uploading image to Cloudinary:', error);
+    throw new Error('Image upload failed');
+  }
 };
 
 /**
@@ -29,7 +35,7 @@ const uploadImage = async (filePath, folder = 'posts', options = {}) => {
  * @param {object} options - Transformation options for the thumbnail.
  * @returns {string} - The URL of the thumbnail.
  */
-const generateThumbnail = (publicId, options = {}) => {
+const generateThumbnailUrl = (publicId, options = {}) => {
   return cloudinary.url(publicId, {
     transformation: [
       { width: 200, height: 150, crop: 'limit' },
@@ -38,5 +44,4 @@ const generateThumbnail = (publicId, options = {}) => {
   });
 };
 
-
-export { uploadImage, generateThumbnail };
+export { uploadImageToCloudinary, generateThumbnailUrl };

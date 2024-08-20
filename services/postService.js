@@ -6,7 +6,7 @@ import Category from '../db/models/category.js';
 import Comment from '../db/models/comment.js';
 import { ERROR_MESSAGES, STATUS_CODE } from '../utils/constants/constants.js';
 import paginate from '../utils/pagination.js';
-import { uploadImage, generateThumbnail } from '../utils/cloudinary.js';
+import { uploadImageToCloudinary, generateThumbnailUrl } from '../utils/cloudinary.js';
 
 /**
  * Service to create a new post and upload its image to Cloudinary.
@@ -29,16 +29,16 @@ const createPostServices = async (userId, { categoryId, title, content, readTime
     if (file && file.path) {
       console.log('File path:', file.path);
 
-      // Upload the image to Cloudinary using the utility function
-      imageUrl = await uploadImage(file.path);
+      // Upload the image to Cloudinary
+      imageUrl = await uploadImageToCloudinary(file.path);
       console.log('Image uploaded to Cloudinary:', imageUrl);
-
+      
       // Extract the public ID from the image URL
       const publicId = imageUrl.split('/').slice(-2).join('/').split('.')[0];
       console.log('Extracted public ID:', publicId);
-
-      // Generate the thumbnail URL using the utility function
-      thumbnailUrl = generateThumbnail(publicId);
+      
+      // Generate the thumbnail URL
+      thumbnailUrl = generateThumbnailUrl(publicId);
       console.log('Generated thumbnail URL:', thumbnailUrl);
     }
 
@@ -62,7 +62,7 @@ const createPostServices = async (userId, { categoryId, title, content, readTime
     return newPost;
   } catch (error) {
     console.error('Error in createPostServices:', error);
-    throw new AppError(error.message || 'An error occurred while creating the post.', 500);
+    throw new Error('An error occurred while creating the post.');
   }
 };
 
