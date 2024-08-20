@@ -101,7 +101,7 @@ const getPostServices = async (postId) => {
         {
           model: User,
           as: 'User',
-          attributes: ['id', 'firstName', 'lastName', 'email'],
+          attributes: ['id', 'firstName', 'lastName', 'thumbnail'],
         },
         {
           model: Category,
