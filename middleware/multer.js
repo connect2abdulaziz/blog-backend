@@ -1,6 +1,7 @@
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 // Get the current directory in ES module environments
 const __filename = fileURLToPath(import.meta.url);
