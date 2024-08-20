@@ -21,18 +21,18 @@ import {
 
 // Create new post
 const createPost = catchAsync(async (req, res, next) => {
-  const { error, value } = postSchema.validate(req.body);
+  const { title, content, categoryId, readTime } = req.body;
+  const { error, value } = postSchema.validate({ title, content, categoryId, readTime });
   if (error) {
-    return next(
-      new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST)
-    );
+    return next(new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST));
   }
   const { id: userId } = req.user;
-  const newPost = await createPostServices(userId, value);
+  const newPost = await createPostServices(userId, value, req.file);
   return res
     .status(STATUS_CODE.CREATED)
     .json(appSuccess(SUCCESS_MESSAGES.POST_CREATED, newPost));
 });
+
 
 // Get all posts
 const getPosts = catchAsync(async (req, res, next) => {

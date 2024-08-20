@@ -6,20 +6,41 @@ import Category from '../db/models/category.js';
 import Comment from '../db/models/comment.js';
 import { ERROR_MESSAGES, STATUS_CODE } from '../utils/constants/constants.js';
 import paginate from '../utils/pagination.js';
+import { uploadImage, generateThumbnail } from '../utils/cloudinary.js';
 
-// Create a new post
-const createPostServices = async (userId, { categoryId, title, content, readTime, image, thumbnail }) => {
+/**
+ * Creates a new post and uploads its image to Cloudinary.
+ * @param {string} userId - The ID of the user creating the post.
+ * @param {object} postData - The data of the post to be created.
+ * @param {object} file - The image file to be uploaded.
+ * @returns {Promise<Post>} - The newly created post.
+ * @throws {AppError} - If an error occurs during creation or upload.
+ */
+const createPostServices = async (userId, { categoryId, title, content, readTime, image }, file) => {
   try {
-    console.log('Creating post', userId, categoryId, title, content);
+    let imageUrl = null;
+    let thumbnailUrl = null;
+
+    if (file) {
+      // Upload the image to Cloudinary
+      imageUrl = await uploadImage(file.path);
+      
+      // Generate the thumbnail
+      const publicId = imageUrl.split('/').slice(-2).join('/').split('.')[0];
+      thumbnailUrl = generateThumbnail(publicId);
+    }
+
+    // Create the new post with or without the image and thumbnail
     const newPost = await Post.create({
       userId,
       categoryId,
       title,
       content,
       readTime,
-      image,
-      thumbnail,
+      image: imageUrl || null,
+      thumbnail: thumbnailUrl || null,
     });
+
     return newPost;
   } catch (error) {
     throw new AppError(error.message || ERROR_MESSAGES.CONTENT_REQUIRED, STATUS_CODE.INTERNAL_SERVER_ERROR);
