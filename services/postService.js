@@ -18,33 +18,18 @@ import { uploadImageToCloudinary, generateThumbnailUrl } from '../utils/cloudina
  */
 const createPostServices = async (userId, { categoryId, title, content, readTime }, file) => {
   try {
-    console.log('--- Starting createPostServices ---');
-    console.log('User ID:', userId);
-    console.log('Post Data:', { categoryId, title, content, readTime });
-    console.log('File Object:', file);
 
     let imageUrl = null;
     let thumbnailUrl = null;
 
     if (file && file.path) {
-      console.log('File path:', file.path);
-
       // Upload the image to Cloudinary
       imageUrl = await uploadImageToCloudinary(file.path);
-      console.log('Image uploaded to Cloudinary:', imageUrl);
-      
       // Extract the public ID from the image URL
       const publicId = imageUrl.split('/').slice(-2).join('/').split('.')[0];
-      console.log('Extracted public ID:', publicId);
-      
       // Generate the thumbnail URL
       thumbnailUrl = generateThumbnailUrl(publicId);
-      console.log('Generated thumbnail URL:', thumbnailUrl);
     }
-
-    console.log('Final Image URL:', imageUrl);
-    console.log('Final Thumbnail URL:', thumbnailUrl);
-
     // Create the new post with or without the image and thumbnail
     const newPost = await Post.create({
       userId,
@@ -56,13 +41,9 @@ const createPostServices = async (userId, { categoryId, title, content, readTime
       thumbnail: thumbnailUrl || null,
     });
 
-    console.log('New Post Created:', newPost);
-    console.log('--- End of createPostServices ---');
-
     return newPost;
   } catch (error) {
-    console.error('Error in createPostServices:', error);
-    throw new Error('An error occurred while creating the post.');
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 
@@ -119,21 +100,21 @@ const getPostServices = async (postId) => {
       include: [
         {
           model: User,
-          as: 'user',
+          as: 'Uer',
           attributes: ['id', 'firstName', 'lastName', 'email'],
         },
         {
           model: Category,
-          as: 'category',
+          as: 'Category',
           attributes: ['id', 'tag'],
         },
         {
           model: Comment,
-          as: 'comments',
+          as: 'Comment',
           include: [
             {
               model: User,
-              as: 'user',
+              as: 'User',
               attributes: ['id', 'firstName', 'lastName', 'thumbnail'],
             },
           ],
