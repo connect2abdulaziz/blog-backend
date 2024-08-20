@@ -110,7 +110,7 @@ const getPostServices = async (postId) => {
         },
         {
           model: Comment,
-          as: 'Comment',
+          as: 'Comments',
           include: [
             {
               model: User,
@@ -144,12 +144,12 @@ const myPostsServices = async (userId, { page = 1, limit = 10 }) => {
       include: [
         {
           model: User,
-          as: 'user',
+          as: 'User',
           attributes: ['id', 'firstName', 'lastName', 'email'],
         },
         {
           model: Category,
-          as: 'category',
+          as: 'Category',
           attributes: ['id', 'tag'],
         },
       ],
