@@ -1,13 +1,23 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
 
-const { EMAIL_FROM, EMAIL_PASSWORD_FORGOT_PASSWORD } = process.env;
+// Load environment variables from .env file
+dotenv.config();
+
+const { EMAIL_FROM, EMAIL_PASS } = process.env;
+
+if (!EMAIL_FROM || !EMAIL_PASS) {
+  throw new Error("Missing EMAIL_FROM or EMAIL_PASS in environment variables");
+}
 
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
     user: EMAIL_FROM,
-    pass: EMAIL_PASSWORD_FORGOT_PASSWORD,
+    pass: EMAIL_PASS,
   },
+  logger: true,  // Enable logging for debugging
+  debug: true,   // Enable debug output
 });
 
 const sendEmail = async ({ to, subject, text, html }) => {
