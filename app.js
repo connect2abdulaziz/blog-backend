@@ -12,8 +12,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import corsHandler from './middleware/corsHandler.js'; 
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
 
 // Resolve the __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +23,9 @@ const swaggerDocument = YAML.load(swaggerFilePath);
 
 // Create Express app
 const app = express();
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 // Serve static files (e.g., for Swagger UI)
 app.use(
