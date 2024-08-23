@@ -2,6 +2,10 @@ import { generateToken } from './tokenUtils.js';
 import  sendEmail  from './emailUtils.js'; 
 import { ERROR_MESSAGES, STATUS_CODE } from '../constants/constants.js';
 import AppError from '../errors/appError.js';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 
 const sendEmailWithToken = async ({
