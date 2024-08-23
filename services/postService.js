@@ -5,7 +5,7 @@ import User from '../db/models/user.js';
 import Category from '../db/models/category.js';
 import { ERROR_MESSAGES, STATUS_CODE } from '../utils/constants/constants.js';
 import paginate from '../utils/pagination.js';
-import { uploadImageToCloudinary, generateThumbnailUrl } from '../utils/cloudinary.js';
+import { uploadImageToCloudinary, generateThumbnailUrl, deleteImageFromCloudinary, } from '../utils/cloudinary.js';
 
 /**
  * Service to create a new post and upload its image to Cloudinary.

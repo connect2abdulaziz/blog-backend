@@ -10,6 +10,7 @@ import { sendEmailWithToken } from "../utils/helpers/emailTokenUtils.js";
 import {
   uploadImageToCloudinary,
   generateThumbnailUrl,
+  deleteImageFromCloudinary,
 } from "../utils/cloudinary.js";
 
 // Constants and Configuration
