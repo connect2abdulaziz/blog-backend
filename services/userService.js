@@ -206,6 +206,10 @@ const deleteUserServices = async (userId) => {
     if (!user) {
       throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
+    if (user.profilePicture){
+      const publicId = user.profilePicture.split('/').slice(-2).join('/').split('.')[0];
+      await deleteImageFromCloudinary(publicId);
+    }
     await user.destroy();
   } catch (error) {
     throw new AppError(

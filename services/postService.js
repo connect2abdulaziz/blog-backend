@@ -222,6 +222,11 @@ const deletePostServices = async ({ postId, userId }) => {
       throw new AppError(ERROR_MESSAGES.UNAUTHORIZED, STATUS_CODE.UNAUTHORIZED);
     }
 
+    if (post.image) {
+      const publicId = post.image.split('/').slice(-2).join('/').split('.')[0];
+      await deleteImageFromCloudinary(publicId);
+    }
+
     await Post.destroy({ where: { id: postId, userId } }); 
     return postId;
   } catch (error) {
