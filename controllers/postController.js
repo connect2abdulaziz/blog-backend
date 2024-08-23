@@ -59,7 +59,8 @@ const getPostById = catchAsync(async (req, res, next) => {
 
 // Update post
 const updatePostById = catchAsync(async (req, res, next) => {
-  const { error, value } = updateSchema.validate(req.body);
+  const { title, content, categoryId, readTime } = req.body;
+  const { error, value } = updateSchema.validate({ title, content, categoryId, readTime });
   if (error) {
     return next(
       new AppError(error.details[0].message, STATUS_CODE.BAD_REQUEST)
@@ -67,7 +68,7 @@ const updatePostById = catchAsync(async (req, res, next) => {
   }
   const { id: userId } = req.user;
   const { id: postId } = req.params;
-  const updatedPost = await updatePostServices(postId, userId, value);
+  const updatedPost = await updatePostServices(postId, userId, value, req.file);
   return res
     .status(STATUS_CODE.OK)
     .json(appSuccess(SUCCESS_MESSAGES.POST_UPDATED, updatedPost));

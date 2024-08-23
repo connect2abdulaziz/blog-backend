@@ -252,6 +252,12 @@ const updateUserImageServices = async (userId, file) => {
     let thumbnailUrl = null;
 
     if (file && file.path) {
+
+      if (user.profilePicture) {
+        const publicId = user.profilePicture.split('/').slice(-2).join('/').split('.')[0];
+        await deleteImageFromCloudinary(publicId);
+      }
+
       // Upload the image to Cloudinary
       imageUrl = await uploadImageToCloudinary(file.path);
       // Extract the public ID from the image URL

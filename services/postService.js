@@ -9,7 +9,7 @@ import { uploadImageToCloudinary, generateThumbnailUrl } from '../utils/cloudina
 
 /**
  * Service to create a new post and upload its image to Cloudinary.
- * @param {string} userId - The ID of the user creating the post.
+ * @param {number} userId - The ID of the user creating the post.
  * @param {object} postData - The data of the post to be created.
  * @param {object} file - The image file to be uploaded.
  * @returns {Promise<Post>} - The newly created post.
@@ -151,39 +151,61 @@ const myPostsServices = async (userId, { page = 1, limit = 10 }) => {
   }
 };
 
-// Update an existing post
-const updatePostServices = async (postId, userId, { categoryId, title, content, readTime, image, thumbnail }) => {
-  try {
-    console.log('Updating post', postId, userId, categoryId, title, content);
-    const post = await Post.findByPk(postId);
 
-    if (!post) {
+
+/**
+ * Service to update an existing post and optionally upload a new image to Cloudinary.
+ * Deletes the old image from Cloudinary if a new image is provided.
+ * @param {number} postId - The ID of the post to be updated.
+ * @param {number} userId - The user ID of the user}
+ * @param {object} updateData - The data to update the post with.
+ * @param {object} file - The new image file to be uploaded (optional).
+ * @returns {Promise<Post>} - The updated post.
+ * @throws {AppError} - If an error occurs during the update or upload.
+ */
+const updatePostServices = async (postId, userId, { categoryId, title, content, readTime }, file) => {
+  try {
+    // Fetch the existing post
+    const existingPost = await Post.findByPk(postId);
+    if (!existingPost) {
       throw new AppError(ERROR_MESSAGES.POST_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
 
-    if (post.userId !== userId) {
+    if (existingPost.userId !== userId) {
       throw new AppError(ERROR_MESSAGES.UNAUTHORIZED, STATUS_CODE.UNAUTHORIZED);
     }
 
-    await Post.update(
-      {
-        categoryId,
-        title,
-        content,
-        readTime,
-        image,
-        thumbnail,
-        updatedAt: new Date(),
-      },
-      {
-        where: { id: postId, userId }, 
-      }
-    );
+    let imageUrl = existingPost.image;
+    let thumbnailUrl = existingPost.thumbnail;
 
-    const updatedPost = await Post.findByPk(postId);
-    return { post, updatedPost };
+    if (file && file.path) {
+      // Delete the old image from Cloudinary
+      if (existingPost.image) {
+        const publicId = existingPost.image.split('/').slice(-2).join('/').split('.')[0];
+        await deleteImageFromCloudinary(publicId);
+      }
+
+      // Upload the new image to Cloudinary
+      imageUrl = await uploadImageToCloudinary(file.path);
+      // Extract the public ID from the image URL
+      const newPublicId = imageUrl.split('/').slice(-2).join('/').split('.')[0];
+      // Generate the new thumbnail URL
+      thumbnailUrl = generateThumbnailUrl(newPublicId);
+    }
+
+    // Update the post with the new data
+    await existingPost.update({
+      categoryId: categoryId || existingPost.categoryId,
+      title: title || existingPost.title,
+      content: content || existingPost.content,
+      readTime: readTime || existingPost.readTime,
+      image: imageUrl,
+      thumbnail: thumbnailUrl,
+    });
+
+    return existingPost;
   } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.POST_UPDATE_FAILED, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
   }
 };
 

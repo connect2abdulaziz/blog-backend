@@ -18,6 +18,6 @@ router.route("/:id").get(getPostById);
 //protected
 router.route('/').post(authentication, upload.single('image'), createPost);
 router.route("/:id/my-posts").get(authentication, getPosts);
-router.route("/:id").patch(authentication, updatePostById);
+router.route("/:id").patch(authentication, upload.single('image'), updatePostById);
 router.route("/:id").delete(authentication, deletePostById);
 export default router;

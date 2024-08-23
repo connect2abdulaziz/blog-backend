@@ -46,4 +46,20 @@ const generateThumbnailUrl = (publicId, options = {}) => {
   });
 };
 
-export { uploadImageToCloudinary, generateThumbnailUrl };
+/**
+ * Deletes an image from Cloudinary based on its public ID.
+ * @param {string} publicId - The public ID of the image to be deleted.
+ * @returns {Promise<void>} - A promise that resolves when the image is deleted.
+ * @throws {Error} - If deletion fails.
+ */
+const deleteImageFromCloudinary = async (publicId) => {
+  try {
+    await cloudinary.uploader.destroy(publicId);
+    console.log(`Image with public ID ${publicId} deleted successfully.`);
+  } catch (error) {
+    console.error('Error deleting image from Cloudinary:', error);
+    throw new Error('Image deletion failed');
+  }
+};
+
+export { uploadImageToCloudinary, generateThumbnailUrl, deleteImageFromCloudinary };
