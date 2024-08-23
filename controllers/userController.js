@@ -128,7 +128,8 @@ const updateUser = catchAsync(async (req, res, next) => {
 // Delete User Controller
 const deleteUser = catchAsync(async (req, res, next) => {
   const { id: userId } = req.user;
-  await deleteUserServices(userId);
+  const {password} = req.body;
+  await deleteUserServices(userId, password);
   return res.json(appSuccess(SUCCESS_MESSAGES.USER_DELETED, userId));
 });
 

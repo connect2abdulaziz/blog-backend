@@ -200,11 +200,18 @@ const updateUserServices = async (userId, updates) => {
   }
 };
 
-const deleteUserServices = async (userId) => {
+const deleteUserServices = async (userId, password) => {
   try {
     const user = await User.findByPk(userId);
     if (!user) {
       throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.NOT_FOUND);
+    }
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      throw new AppError(
+        ERROR_MESSAGES.INCORRECT_PASSWORD,
+        STATUS_CODE.BAD_REQUEST
+      );
     }
     if (user.profilePicture){
       const publicId = user.profilePicture.split('/').slice(-2).join('/').split('.')[0];
