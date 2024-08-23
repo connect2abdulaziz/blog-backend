@@ -3,7 +3,6 @@ import AppError from '../utils/errors/appError.js';
 import Post from '../db/models/post.js';
 import User from '../db/models/user.js';
 import Category from '../db/models/category.js';
-import Comment from '../db/models/comment.js';
 import { ERROR_MESSAGES, STATUS_CODE } from '../utils/constants/constants.js';
 import paginate from '../utils/pagination.js';
 import { uploadImageToCloudinary, generateThumbnailUrl } from '../utils/cloudinary.js';

@@ -20,6 +20,7 @@ import {
   updateUserServices,
   deleteUserServices,
   changePasswordServices,
+  updateUserImageServices,
 } from '../services/userService.js';
 import {
   STATUS_CODE,
@@ -146,6 +147,15 @@ const changePassword = catchAsync(async (req, res, next) => {
     .json(appSuccess(SUCCESS_MESSAGES.PASSWORD_CHANGED));
 });
 
+// Upload User Image Controller
+const updateImage = catchAsync(async (req, res, next) => {
+  const { id: userId } = req.user;
+  const result = await updateUserImageServices(userId, req.file);
+  return res
+   .status(STATUS_CODE.OK)
+   .json(appSuccess(SUCCESS_MESSAGES.USER_IMAGE_UPDATED, result));
+});
+
 // Logout Controller
 const logout = catchAsync(async (req, res, next) => {
   return res.status(STATUS_CODE.OK).json({
@@ -165,5 +175,6 @@ export {
   updateUser,
   deleteUser,
   changePassword,
+  updateImage,
   logout,
 };

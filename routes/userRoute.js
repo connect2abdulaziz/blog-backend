@@ -9,9 +9,11 @@ import {
   updateUser,
   deleteUser,
   changePassword,
+  updateImage,
   logout,
 } from "../controllers/userController.js";
 import { authentication } from "../middleware/auth.js";
+import upload from "../middleware/multer.js";
 import express from "express";
 
 const router = express.Router();
@@ -27,6 +29,7 @@ router.route("/verify-email/:token").post(verifyEmail);
 router.route("/").get(authentication, getAllUsers);
 router.route("/:id").get(authentication, getUserById);
 router.route("/update").patch(authentication, updateUser);
+router.route("/update-image").patch(authentication, upload.single('image'), updateImage);
 router.route("/delete").delete(authentication, deleteUser);
 router.route("/change-password").patch(authentication, changePassword);
 router.route("/logout").post(authentication, logout);

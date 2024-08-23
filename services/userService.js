@@ -1,23 +1,33 @@
 // External Libraries
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 
 // Internal Modules
-import User from '../db/models/user.js';
-import AppError from '../utils/errors/appError.js';
-import { hashPassword } from '../utils/helpers/hashPasswordUtils.js';
-import { generateToken, verifyToken } from '../utils/helpers/tokenUtils.js';
-import { sendEmailWithToken } from '../utils/helpers/emailTokenUtils.js';
+import User from "../db/models/user.js";
+import AppError from "../utils/errors/appError.js";
+import { hashPassword } from "../utils/helpers/hashPasswordUtils.js";
+import { generateToken, verifyToken } from "../utils/helpers/tokenUtils.js";
+import { sendEmailWithToken } from "../utils/helpers/emailTokenUtils.js";
+import {
+  uploadImageToCloudinary,
+  generateThumbnailUrl,
+} from "../utils/cloudinary.js";
 
 // Constants and Configuration
-import { ERROR_MESSAGES, STATUS_CODE } from '../utils/constants/constants.js';
-import { EMAIL_SUBJECTS, EMAIL_TEMPLATES, EMAIL_CONSTANTS } from '../utils/constants/emailTemplates.js';
-
+import { ERROR_MESSAGES, STATUS_CODE } from "../utils/constants/constants.js";
+import {
+  EMAIL_SUBJECTS,
+  EMAIL_TEMPLATES,
+  EMAIL_CONSTANTS,
+} from "../utils/constants/emailTemplates.js";
 
 const createUserServices = async ({ firstName, lastName, email, password }) => {
   try {
     const alreadyRegistered = await findByEmail(email);
     if (alreadyRegistered) {
-      throw new AppError(ERROR_MESSAGES.EMAIL_ALREADY_EXISTS, STATUS_CODE.BAD_REQUEST);
+      throw new AppError(
+        ERROR_MESSAGES.EMAIL_ALREADY_EXISTS,
+        STATUS_CODE.BAD_REQUEST
+      );
     }
     const hashedPassword = await hashPassword(password);
     const newUser = await User.create({
@@ -37,11 +47,19 @@ const createUserServices = async ({ firstName, lastName, email, password }) => {
       tokenExpiresIn: EMAIL_CONSTANTS.VERIFY_EMAIL_TOKEN_EXPIRATION,
     });
 
-    const { password: pass, profilePicture, thumbnail, ...cleanedResult } = newUser.toJSON();
+    const {
+      password: pass,
+      profilePicture,
+      thumbnail,
+      ...cleanedResult
+    } = newUser.toJSON();
     cleanedResult.token = generateToken({ id: newUser.id });
     return cleanedResult;
   } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(
+      error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+      STATUS_CODE.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
@@ -64,12 +82,12 @@ const forgotPasswordServices = async ({ email }) => {
 
     return user.id;
   } catch (error) {
-    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(
+      ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+      STATUS_CODE.INTERNAL_SERVER_ERROR
+    );
   }
 };
-
-
-
 
 const verifyEmailServices = async (token) => {
   try {
@@ -79,12 +97,18 @@ const verifyEmailServices = async (token) => {
       throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
     if (user.verified) {
-      throw new AppError(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED, STATUS_CODE.BAD_REQUEST);
+      throw new AppError(
+        ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED,
+        STATUS_CODE.BAD_REQUEST
+      );
     }
     await User.update({ verified: true }, { where: { id: user.id } });
     return user.id;
   } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(
+      error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+      STATUS_CODE.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
@@ -92,14 +116,20 @@ const loginUserServices = async ({ email, password }) => {
   try {
     const user = await findByEmail(email);
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new AppError(ERROR_MESSAGES.INCORRECT_EMAIL_OR_PASSWORD, STATUS_CODE.BAD_REQUEST);
+      throw new AppError(
+        ERROR_MESSAGES.INCORRECT_EMAIL_OR_PASSWORD,
+        STATUS_CODE.BAD_REQUEST
+      );
     }
 
     const { password: _, ...cleanedUser } = user.dataValues;
     const token = generateToken({ id: user.id });
     return { ...cleanedUser, token };
   } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(
+      error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+      STATUS_CODE.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
@@ -116,27 +146,38 @@ const resetPasswordServices = async ({ password }, token) => {
     await user.save();
     return user.id;
   } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(
+      error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+      STATUS_CODE.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
 const getAllUsersServices = async () => {
   try {
-    return await User.findAll({ attributes: { exclude: ['password'] } });
+    return await User.findAll({ attributes: { exclude: ["password"] } });
   } catch (error) {
-    throw new AppError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(
+      ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+      STATUS_CODE.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
 const getUserByIdServices = async (id) => {
   try {
-    const user = await User.findByPk(id, { attributes: { exclude: ['password'] } });
+    const user = await User.findByPk(id, {
+      attributes: { exclude: ["password"] },
+    });
     if (!user) {
       throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
     return user;
   } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(
+      error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+      STATUS_CODE.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
@@ -151,7 +192,10 @@ const updateUserServices = async (userId, updates) => {
     const { password, ...cleanedResult } = user.toJSON();
     return cleanedResult;
   } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(
+      error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+      STATUS_CODE.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
@@ -163,18 +207,27 @@ const deleteUserServices = async (userId) => {
     }
     await user.destroy();
   } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(
+      error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+      STATUS_CODE.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
-const changePasswordServices = async (userId, {currentPassword, newPassword}) => {
+const changePasswordServices = async (
+  userId,
+  { currentPassword, newPassword }
+) => {
   try {
     const user = await User.findByPk(userId);
     if (!user) {
       throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
     if (!(await bcrypt.compare(currentPassword, user.password))) {
-      throw new AppError(ERROR_MESSAGES.INCORRECT_OLD_PASSWORD, STATUS_CODE.BAD_REQUEST);
+      throw new AppError(
+        ERROR_MESSAGES.INCORRECT_OLD_PASSWORD,
+        STATUS_CODE.BAD_REQUEST
+      );
     }
 
     const hashedPassword = await hashPassword(newPassword);
@@ -182,7 +235,40 @@ const changePasswordServices = async (userId, {currentPassword, newPassword}) =>
     await user.save();
     return user.id;
   } catch (error) {
-    throw new AppError(error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR, STATUS_CODE.INTERNAL_SERVER_ERROR);
+    throw new AppError(
+      error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+      STATUS_CODE.INTERNAL_SERVER_ERROR
+    );
+  }
+};
+
+const updateUserImageServices = async (userId, file) => {
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.NOT_FOUND);
+    }
+    let imageUrl = null;
+    let thumbnailUrl = null;
+
+    if (file && file.path) {
+      // Upload the image to Cloudinary
+      imageUrl = await uploadImageToCloudinary(file.path);
+      // Extract the public ID from the image URL
+      const publicId = imageUrl.split("/").slice(-2).join("/").split(".")[0];
+      // Generate the thumbnail URL
+      thumbnailUrl = generateThumbnailUrl(publicId);
+    }
+    user.thumbnail = thumbnailUrl;
+    user.profilePicture = ImageUrl;
+    await user.save();
+    const { password, ...cleanedResult } = user.toJSON();
+    return cleanedResult;
+  } catch (error) {
+    throw new AppError(
+      error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+      STATUS_CODE.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
@@ -192,8 +278,8 @@ const findByEmail = async (email) => {
     const exists = await User.findOne({ where: { email } });
     return exists;
   } catch (error) {
-    throw new AppError( error.message || 
-      ERROR_MESSAGES.USER_NOT_FOUND,
+    throw new AppError(
+      error.message || ERROR_MESSAGES.USER_NOT_FOUND,
       STATUS_CODE.INTERNAL_SERVER_ERROR
     );
   }
@@ -210,4 +296,5 @@ export {
   updateUserServices,
   deleteUserServices,
   changePasswordServices,
+  updateUserImageServices,
 };
