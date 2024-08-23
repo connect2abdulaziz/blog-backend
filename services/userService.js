@@ -260,7 +260,7 @@ const updateUserImageServices = async (userId, file) => {
       thumbnailUrl = generateThumbnailUrl(publicId);
     }
     user.thumbnail = thumbnailUrl;
-    user.profilePicture = ImageUrl;
+    user.profilePicture = imageUrl;
     await user.save();
     const { password, ...cleanedResult } = user.toJSON();
     return cleanedResult;
