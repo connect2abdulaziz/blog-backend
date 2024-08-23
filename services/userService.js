@@ -84,6 +84,7 @@ const forgotPasswordServices = async ({ email }) => {
     return user.id;
   } catch (error) {
     throw new AppError(
+      error.message ||
       ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
       STATUS_CODE.INTERNAL_SERVER_ERROR
     );
