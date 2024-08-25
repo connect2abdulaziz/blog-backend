@@ -40,7 +40,7 @@ const generateThumbnailUrl = (publicId, options = {}) => {
   
   return cloudinary.url(publicId, {
     transformation: [
-      { width: 200, height: 150, crop: 'limit' },
+      { width: 400, height: 300, crop: 'limit' },
       ...transformations,
     ],
   });
