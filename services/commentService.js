@@ -35,8 +35,9 @@ const addCommentServices = async ({ postId, parentId, content }, userId) => {
     await transaction.commit();
     return {
       ...newComment.toJSON(),
-      user: {
+      User: {
         firstName: user.firstName,
+        lastName: user.lastName,
         thumbnail: user.thumbnail,
       },
     };
