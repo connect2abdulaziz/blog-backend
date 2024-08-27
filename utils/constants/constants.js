@@ -36,6 +36,7 @@ export const ERROR_MESSAGES = {
   NEW_PASSWORD_MIN_LENGTH: 'New password must be at least 8 characters long',
   NEW_PASSWORD_PATTERN_INVALID: 'New password must include at least one uppercase letter, one lowercase letter, one number, and one special character',
   UNAUTHORIZED: 'User not authorized to perform this action',
+  INVALID_REFRESH_TOKEN: 'Invalid refresh token',
 
   // Post-related messages
   POST_NOT_FOUND: 'Post not found',
@@ -89,6 +90,9 @@ export const SUCCESS_MESSAGES = {
   USER_DELETED: 'User deleted successfully',
   USER_FETCHED: 'Users fetched successfully',
   PASSWORD_CHANGED: 'Password changed successfully',
+  USER_IMAGE_UPDATED: 'User image updated successfully',
+  REFRESH_TOKEN: 'Refresh token sent successfully',
+  LOGOUT_SUCCESS: 'User logged out successfully',
 
   // Post-related messages
   POST_CREATED: 'Post created successfully',

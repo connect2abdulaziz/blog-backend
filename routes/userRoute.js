@@ -10,6 +10,7 @@ import {
   deleteUser,
   changePassword,
   updateImage,
+  refreshToken,
   logout,
 } from "../controllers/userController.js";
 import { authentication } from "../middleware/auth.js";
@@ -24,6 +25,7 @@ router.route("/login").post(login);
 router.route("/forgot-password").post(forgotPassword);
 router.route("/reset-password/:token").post(resetPassword);
 router.route("/verify-email/:token").post(verifyEmail);
+router.route("/refresh-token").post(refreshToken);
 
 // Protected routes
 router.route("/").get(authentication, getAllUsers);

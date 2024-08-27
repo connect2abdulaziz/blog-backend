@@ -7,6 +7,7 @@ import AppError from "../utils/errors/appError.js";
 import { hashPassword } from "../utils/helpers/hashPasswordUtils.js";
 import { generateToken, verifyToken } from "../utils/helpers/tokenUtils.js";
 import { sendEmailWithToken } from "../utils/helpers/emailTokenUtils.js";
+import { generateRefreshToken, verifyRefreshToken, removeRefreshToken } from "../utils/helpers/refreshTokenUtils.js";
 import {
   uploadImageToCloudinary,
   generateThumbnailUrl,
@@ -116,7 +117,10 @@ const verifyEmailServices = async (token) => {
 
 const loginUserServices = async ({ email, password }) => {
   try {
-    const user = await findByEmail(email);
+    // Find the user by email
+    const user = await User.findOne({ where: { email } });
+
+    // Check if the user exists and the password matches
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new AppError(
         ERROR_MESSAGES.INCORRECT_EMAIL_OR_PASSWORD,
@@ -124,9 +128,15 @@ const loginUserServices = async ({ email, password }) => {
       );
     }
 
-    const { password: _, ...cleanedUser } = user.dataValues;
+    // Clean the user data by removing the password field
+    const { password: _, ...cleanedUser } = user.toJSON();
+
+    // Generate an access token and a refresh token
     const token = generateToken({ id: user.id });
-    return { ...cleanedUser, token };
+    const refreshToken = await generateRefreshToken(user.id);
+
+    // Return the cleaned user data along with both tokens
+    return { ...cleanedUser, token, refreshToken };
   } catch (error) {
     throw new AppError(
       error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
@@ -291,6 +301,49 @@ const updateUserImageServices = async (userId, file) => {
   }
 };
 
+const refreshTokenServices = async (token) => {
+  try {
+    const refreshToken = await verifyRefreshToken(token);
+    const user = await User.findByPk(refreshToken.userId);
+
+    if (!user) {
+      throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.UNAUTHORIZED);
+    }
+
+    // Generate new tokens
+    const newAccessToken = generateToken({ id: user.id });
+    const newRefreshToken = await generateRefreshToken(user.id);
+
+    // Remove old refresh token
+    await removeRefreshToken(token);
+
+    return {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    };
+  } catch (error) {
+    // Logout if token verification fails
+    await removeRefreshToken(token);
+    throw new AppError(
+      error.message || ERROR_MESSAGES.INVALID_REFRESH_TOKEN,
+      STATUS_CODE.UNAUTHORIZED
+    );
+  }
+};
+
+const logoutUserServices = async (refreshToken) => {
+  try {
+    await removeRefreshToken(refreshToken); 
+    return { message: 'Logged out successfully' };
+  } catch (error) {
+    throw new AppError(
+      error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+      STATUS_CODE.INTERNAL_SERVER_ERROR
+    );
+  }
+};
+
+
 // Function to find a user by email
 const findByEmail = async (email) => {
   try {
@@ -316,4 +369,6 @@ export {
   deleteUserServices,
   changePasswordServices,
   updateUserImageServices,
+  refreshTokenServices,
+  logoutUserServices,
 };

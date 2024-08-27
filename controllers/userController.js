@@ -21,6 +21,8 @@ import {
   deleteUserServices,
   changePasswordServices,
   updateUserImageServices,
+  refreshTokenServices,
+  logoutUserServices,
 } from '../services/userService.js';
 import {
   STATUS_CODE,
@@ -157,8 +159,20 @@ const updateImage = catchAsync(async (req, res, next) => {
    .json(appSuccess(SUCCESS_MESSAGES.USER_IMAGE_UPDATED, result));
 });
 
+
+
+const refreshToken = async (req, res, next) => {
+  const { token } = req.body;
+  const tokens = await refreshTokenServices(token);
+  return res.status(STATUS_CODE.OK).json(appSuccess(SUCCESS_MESSAGES.REFRESH_TOKEN, tokens));
+};
+
+
+
 // Logout Controller
 const logout = catchAsync(async (req, res, next) => {
+  const { token } = req.body;
+  await logoutUserServices(token);
   return res.status(STATUS_CODE.OK).json({
     status: "success",
     message: SUCCESS_MESSAGES.LOGOUT_SUCCESS,
@@ -177,5 +191,6 @@ export {
   deleteUser,
   changePassword,
   updateImage,
+  refreshToken,
   logout,
 };
