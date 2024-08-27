@@ -1,37 +1,31 @@
-import { createClient } from "redis";
 import crypto from "crypto";
 import AppError from "../errors/appError.js";
 import { ERROR_MESSAGES, STATUS_CODE } from "../constants/constants.js";
 
-// Create Redis client
-const redisClient = createClient();
-
-redisClient.on("error", (err) => console.error("Redis Client Error", err));
-
-await redisClient.connect();
+const tokens = new Map(); // In-memory storage for tokens
 
 const generateRefreshToken = async (userId) => {
   const token = crypto.randomBytes(40).toString("hex");
-  const expiresAt = 7 * 24 * 60 * 60; // 7 days in seconds
+  const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
 
-  // Store the token in Redis with expiration time
-  await redisClient.setEx(token, expiresAt, userId);
+  // Store the token in memory
+  tokens.set(token, { userId, expiresAt });
 
   return token;
 };
 
 const verifyRefreshToken = async (token) => {
-  const userId = await redisClient.get(token);
+  const tokenData = tokens.get(token);
 
-  if (!userId) {
+  if (!tokenData || tokenData.expiresAt < Date.now()) {
     throw new AppError(ERROR_MESSAGES.INVALID_REFRESH_TOKEN, STATUS_CODE.UNAUTHORIZED);
   }
 
-  return { token, userId };
+  return { token, userId: tokenData.userId };
 };
 
 const removeRefreshToken = async (token) => {
-  await redisClient.del(token);
+  tokens.delete(token);
 };
 
 export { generateRefreshToken, verifyRefreshToken, removeRefreshToken };
