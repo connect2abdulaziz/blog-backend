@@ -29,7 +29,7 @@ router.route("/refresh-token").post(refreshToken);
 
 // Protected routes
 router.route("/").get(authentication, getAllUsers);
-router.route("/:id").get(authentication, getUserById);
+router.route("/current").get(authentication, getUserById);
 router.route("/update").patch(authentication, updateUser);
 router.route("/update-image").patch(authentication, upload.single('image'), updateImage);
 router.route("/delete").delete(authentication, deleteUser);

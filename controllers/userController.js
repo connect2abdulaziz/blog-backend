@@ -105,8 +105,7 @@ const getAllUsers = catchAsync(async (req, res, next) => {
 
 // Get User By ID Controller
 const getUserById = catchAsync(async (req, res, next) => {
-  console.log("Getting user by ID");
-  const { id } = req.params;
+  const { id } = req.user;
   const user = await getUserByIdServices(id);
   return res
     .status(STATUS_CODE.OK)
