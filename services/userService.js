@@ -318,7 +318,7 @@ const refreshTokenServices = async (token) => {
     await removeRefreshToken(token);
 
     return {
-      accessToken: newAccessToken,
+      token: newAccessToken,
       refreshToken: newRefreshToken,
     };
   } catch (error) {
