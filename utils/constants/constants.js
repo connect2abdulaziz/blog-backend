@@ -37,6 +37,7 @@ export const ERROR_MESSAGES = {
   NEW_PASSWORD_PATTERN_INVALID: 'New password must include at least one uppercase letter, one lowercase letter, one number, and one special character',
   UNAUTHORIZED: 'User not authorized to perform this action',
   INVALID_REFRESH_TOKEN: 'Invalid refresh token',
+  EMAIL_NOT_VERIFIED: 'Email is not verified',
 
   // Post-related messages
   POST_NOT_FOUND: 'Post not found',

@@ -71,6 +71,9 @@ const forgotPasswordServices = async ({ email }) => {
     if (!user) {
       throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
+    if(!user.verified){
+      throw new AppError(ERROR_MESSAGES.EMAIL_NOT_VERIFIED, STATUS_CODE.BAD_REQUEST);
+    }
 
     await sendEmailWithToken({
       userId: user.id,
