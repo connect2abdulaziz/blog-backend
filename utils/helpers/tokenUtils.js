@@ -1,5 +1,4 @@
 // utils/helpers/tokenUtils.js
-
 import jwt from 'jsonwebtoken';
 const { JWT_SECRET_KEY, JWT_EXPIRES_IN } = process.env;
 
