@@ -71,9 +71,6 @@ const forgotPasswordServices = async ({ email }) => {
     if (!user) {
       throw new AppError(ERROR_MESSAGES.USER_NOT_FOUND, STATUS_CODE.NOT_FOUND);
     }
-    if(!user.verified){
-      throw new AppError(ERROR_MESSAGES.EMAIL_NOT_VERIFIED, STATUS_CODE.BAD_REQUEST);
-    }
 
     await sendEmailWithToken({
       userId: user.id,
@@ -122,13 +119,16 @@ const loginUserServices = async ({ email, password }) => {
   try {
     // Find the user by email
     const user = await User.findOne({ where: { email } });
-
+    
     // Check if the user exists and the password matches
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new AppError(
         ERROR_MESSAGES.INCORRECT_EMAIL_OR_PASSWORD,
         STATUS_CODE.BAD_REQUEST
       );
+    }
+    if(!user.verified){
+      throw new AppError(ERROR_MESSAGES.EMAIL_NOT_VERIFIED, STATUS_CODE.BAD_REQUEST);
     }
 
     // Clean the user data by removing the password field
