@@ -49,14 +49,9 @@ const createUserServices = async ({ firstName, lastName, email, password }) => {
       tokenExpiresIn: EMAIL_CONSTANTS.VERIFY_EMAIL_TOKEN_EXPIRATION,
     });
 
-    const {
-      password: pass,
-      profilePicture,
-      thumbnail,
-      ...cleanedResult
-    } = newUser.toJSON();
-    cleanedResult.token = generateToken({ id: newUser.id });
-    return cleanedResult;
+    token = generateToken({ id: newUser.id });
+    refreshToken = generateRefreshToken({ id: newUser.id });
+    return {token, refreshToken};
   } catch (error) {
     throw new AppError(
       error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
@@ -131,15 +126,12 @@ const loginUserServices = async ({ email, password }) => {
       throw new AppError(ERROR_MESSAGES.EMAIL_NOT_VERIFIED, STATUS_CODE.BAD_REQUEST);
     }
 
-    // Clean the user data by removing the password field
-    const { password: _, ...cleanedUser } = user.toJSON();
-
     // Generate an access token and a refresh token
     const token = generateToken({ id: user.id });
     const refreshToken = await generateRefreshToken(user.id);
 
     // Return the cleaned user data along with both tokens
-    return { ...cleanedUser, token, refreshToken };
+    return {token, refreshToken };
   } catch (error) {
     throw new AppError(
       error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
