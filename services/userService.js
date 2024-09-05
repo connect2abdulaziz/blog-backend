@@ -49,8 +49,8 @@ const createUserServices = async ({ firstName, lastName, email, password }) => {
       tokenExpiresIn: EMAIL_CONSTANTS.VERIFY_EMAIL_TOKEN_EXPIRATION,
     });
 
-    token = generateToken({ id: newUser.id });
-    refreshToken = generateRefreshToken({ id: newUser.id });
+    const token = generateToken({ id: newUser.id });
+    const refreshToken = generateRefreshToken({ id: newUser.id });
     return {token, refreshToken};
   } catch (error) {
     throw new AppError(
