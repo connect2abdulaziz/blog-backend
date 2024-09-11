@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary, UploadApiResponse, TransformationOptions } from 'cloudinary';
 
 // Configure Cloudinary
 cloudinary.config({
@@ -15,9 +15,13 @@ cloudinary.config({
  * @param {object} options - Additional options for Cloudinary upload.
  * @returns {Promise<string>} - The URL of the uploaded image.
  */
-const uploadImageToCloudinary = async (filePath, folder = 'posts', options = {}) => {
+const uploadImageToCloudinary = async (
+  filePath: string,
+  folder: string = 'posts',
+  options: { [key: string]: any } = {}
+): Promise<string> => {
   try {
-    const result = await cloudinary.uploader.upload(filePath, {
+    const result: UploadApiResponse = await cloudinary.uploader.upload(filePath, {
       folder,
       ...options,
     });
@@ -34,9 +38,12 @@ const uploadImageToCloudinary = async (filePath, folder = 'posts', options = {})
  * @param {object} options - Transformation options for the thumbnail.
  * @returns {string} - The URL of the thumbnail.
  */
-const generateThumbnailUrl = (publicId, options = {}) => {
+const generateThumbnailUrl = (
+  publicId: string,
+  options: TransformationOptions | TransformationOptions[] = []
+): string => {
   // Ensure options is an array or an empty array
-  const transformations = Array.isArray(options) ? options : [];
+  const transformations = Array.isArray(options) ? options : [options];
   
   return cloudinary.url(publicId, {
     transformation: [
@@ -52,7 +59,9 @@ const generateThumbnailUrl = (publicId, options = {}) => {
  * @returns {Promise<void>} - A promise that resolves when the image is deleted.
  * @throws {Error} - If deletion fails.
  */
-const deleteImageFromCloudinary = async (publicId) => {
+const deleteImageFromCloudinary = async (
+  publicId: string
+): Promise<void> => {
   try {
     await cloudinary.uploader.destroy(publicId);
     console.log(`Image with public ID ${publicId} deleted successfully.`);

@@ -26,7 +26,7 @@ export interface CommentResponse {
   createdAt?: Date;
   updatedAt?: Date;
   User?: UserResponse;
-  repliesCount?: number;
+  repliesCount: number;
 }
 
 export interface UserResponse {

@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import AppError from "../errors/appError.js";
-import { ERROR_MESSAGES, STATUS_CODE } from "../constants/constants.js";
+import AppError from "../errors/appError";
+import { ERROR_MESSAGES, STATUS_CODE } from "../constants/constants";
 
 const { JWT_REFRESH_SECRET_KEY, JWT_REFRESH_EXPIRES_IN } = process.env;
 

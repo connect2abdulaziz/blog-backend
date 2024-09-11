@@ -1,13 +1,12 @@
 {
   "name": "test",
   "version": "1.0.0",
-  "main": "dist/index.ts",
-  "type": "module",
+  "main": "dist/index.js",
   "scripts": {
     "check-pg": "node -e \"console.log(require('pg').version)\"",
-    "dev": "ts-node --esm src/app.ts",
+    "dev": "ts-node ./src/app.ts",
     "build": "tsc",
-    "start": "node src/app.ts",
+    "start": "node dist/app.js",
     "lint": "eslint 'src/**/*'",
     "test": "jest"
   },

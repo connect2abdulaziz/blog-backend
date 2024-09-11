@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "module": "CommonJS", 
+    "target": "ES6",
+    "module": "CommonJS",
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": true,
     "esModuleInterop": true,
+    "experimentalDecorators": true,
     "skipLibCheck": true,
-    "types": ["node", "express"]
+    "strict": true,
   },
-  "include": ["src/**/*", "src/types/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

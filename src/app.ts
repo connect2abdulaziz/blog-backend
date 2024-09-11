@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import sequelize from "./config/database";
-import appRouter from ".//routes/index";
+import appRouter from "./routes/index"; // Fixed double slash
 import catchAsync from "./utils/errors/catchAsync";
 import AppError from "./utils/errors/appError";
 import globalErrorHandler from "./utils/errors/errorHandler";
@@ -9,37 +9,36 @@ import { STATUS_CODE } from "./utils/constants/constants";
 import corsHandler from "./middleware/corsHandler";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
+import path, { dirname } from "path";
+import { fileURLToPath } from 'url'; // Import fileURLToPath for ES Modules
 
 // Resolve the __dirname equivalent in ESM
-import path , {dirname} from "path";
-const __dirname = dirname(__filename);
+//const __filename = fileURLToPath(import.meta.url);
+//const __dirname = dirname(__filename);
 
 // Load Swagger file
-const swaggerFilePath = path.resolve(__dirname, "swagger.yaml");
-const swaggerDocument = YAML.load(swaggerFilePath);
+//const swaggerFilePath = path.resolve(__dirname, "swagger.yaml");
+//const swaggerDocument = YAML.load(swaggerFilePath);
 
 // Create Express app
 const app = express();
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, "client/build")));
+//app.use(express.static(path.join(__dirname, "client/build")));
 
 // Serve Swagger documentation
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerDocument, {
-    customCssUrl: process.env.SWAGGER_URL,
-  })
-);
+// app.use(
+//   "/api-docs",
+//   swaggerUi.serve,
+//   swaggerUi.setup(swaggerDocument, {
+//     customCssUrl: process.env.SWAGGER_URL,
+//   })
+// );
 
 // Middleware setup
 app.use(express.json());
-
-// Middleware setup for multipart upload
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(express.static("public"));
-
 
 // Apply CORS middleware
 app.use(corsHandler);

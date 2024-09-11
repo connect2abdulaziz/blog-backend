@@ -50,7 +50,7 @@ export const addCommentServices = async (
     }
 
     await transaction.commit();
-    return newComment;
+    return newComment as unknown as CommentResponse;
   } catch (error) {
     await transaction.rollback();
     throw new AppError(
@@ -124,8 +124,11 @@ export const postCommentsServices = async (
     };
 
     const result = await paginate(options.page, options.limit, filter, Comment);
-    if (result.pagination.totalCount === 0) return result;
-    const comments = result.data;
+    if (result.pagination.totalCount === 0) return {
+      data: [],
+      pagination: result.pagination,
+    }
+    const comments = result.data as Comment[];
     const commentIds = comments.map((c: Comment) => c.id);
     const replyCountsResult = await Promise.all(
       commentIds.map(async (id: number) => ({
@@ -142,12 +145,16 @@ export const postCommentsServices = async (
       {} as Record<number, number>
     );
 
-    const commentsWithCounts = comments.map((c: Comment) => ({
+    const commentsWithCounts: CommentResponse[] = comments.map((c: Comment) => ({
       ...c.toJSON(),
       repliesCount: replyCountsMap[c.id] || 0,
     }));
-    result.data = commentsWithCounts;
-    return result;
+    
+    return {
+      data: commentsWithCounts,
+      pagination: result.pagination,
+    }
+    
   } catch (error) {
     throw new AppError(
       ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
@@ -177,7 +184,10 @@ export const getCommentRepliesServices = async (
     };
 
     const result = await paginate(options.page, options.limit, filter, Comment);
-    if (result.pagination.totalCount === 0) return result;
+    if (result.pagination.totalCount === 0) return {
+      data: [],
+      pagination: result.pagination,
+    }
     const replies = result.data;
     const replyIds = replies.map((r: Comment) => r.id);
     const repliesCounts = await Promise.all(
@@ -195,13 +205,15 @@ export const getCommentRepliesServices = async (
       {} as Record<number, number>
     );
 
-    const repliesWithCounts = replies.map((r: Comment) => ({
+    const repliesWithCounts:CommentResponse[] = replies.map((r: Comment) => ({
       ...r.toJSON(),
       repliesCount: nestedRepliesMap[r.id] || 0,
     }));
 
-    result.data = repliesWithCounts;
-    return result;
+    return {
+      data: repliesWithCounts,
+      pagination: result.pagination,
+    }
   } catch (error) {
     throw new AppError(
       ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
@@ -230,7 +242,7 @@ export const updateCommentServices = async (
       content,
       updatedAt: new Date(),
     });
-    return comment;
+    return comment as unknown as CommentResponse;
   } catch (error) {
     throw new AppError(
       ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
@@ -256,7 +268,7 @@ export const deleteCommentServices = async ({
       throw new AppError(ERROR_MESSAGES.UNAUTHORIZED, STATUS_CODE.UNAUTHORIZED);
     }
     await Comment.destroy({ where: { id: commentId } });
-    return comment;
+    return comment as unknown as CommentResponse;
   } catch (error) {
     throw new AppError(
       ERROR_MESSAGES.INTERNAL_SERVER_ERROR,

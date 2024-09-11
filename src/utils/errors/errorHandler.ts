@@ -1,10 +1,11 @@
-import AppError from "./appError.js";
-import { STATUS_CODE, ERROR_MESSAGES } from "../constants/constants.js";
+import { Request, Response, NextFunction } from 'express';
+import AppError from './appError';
+import { STATUS_CODE, ERROR_MESSAGES } from '../constants/constants';
 
 // Send detailed error information in development
-const sendErrorDev = (error, response) => {
+const sendErrorDev = (error: any, response: Response) => {
   const statusCode = error.statusCode || STATUS_CODE.INTERNAL_SERVER_ERROR;
-  const status = error.status || "error";
+  const status = error.status || 'error';
   const message = error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR;
   const stack = error.stack;
 
@@ -16,9 +17,9 @@ const sendErrorDev = (error, response) => {
 };
 
 // Send limited error information in production
-const sendErrorProd = (error, response) => {
+const sendErrorProd = (error: any, response: Response) => {
   const statusCode = error.statusCode || STATUS_CODE.INTERNAL_SERVER_ERROR;
-  const status = error.status || "error";
+  const status = error.status || 'error';
   const message = error.message || ERROR_MESSAGES.INTERNAL_SERVER_ERROR;
 
   if (error.isOperational) {
@@ -29,7 +30,7 @@ const sendErrorProd = (error, response) => {
   }
 
   // Log the detailed error information for debugging
-  console.error("Error details:", {
+  console.error('Error details:', {
     name: error.name,
     message: error.message,
     stack: error.stack,
@@ -42,19 +43,24 @@ const sendErrorProd = (error, response) => {
 };
 
 // Global error handling middleware
-const globalErrorHandler = (err, req, res, next) => {
-  if (err.name === "JsonWebTokenError") {
+const globalErrorHandler = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (err.name === 'JsonWebTokenError') {
     err = new AppError(ERROR_MESSAGES.INVALID_TOKEN, STATUS_CODE.UNAUTHORIZED);
   }
 
-  if (err.name === "SequelizeUniqueConstraintError") {
+  if (err.name === 'SequelizeUniqueConstraintError') {
     err = new AppError(
       ERROR_MESSAGES.EMAIL_ALREADY_EXISTS,
       STATUS_CODE.BAD_REQUEST
     );
   }
 
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === 'development') {
     return sendErrorDev(err, res);
   }
 
