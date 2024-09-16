@@ -7,6 +7,7 @@ interface TokenPayload extends JwtPayload {
   userId: string;
 }
 
+
 // Generate a JWT token
 const generateToken = (userId: number): string => {
   try {
@@ -18,10 +19,11 @@ const generateToken = (userId: number): string => {
 };
 
 // Verify a JWT token and return the userId
-const verifyToken = (token: string): string => {
+const verifyToken = (token: string): number => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET_KEY) as TokenPayload;
-    return decoded.userId;
+    const { userId } = decoded;
+    return parseInt(userId, 10);
   } catch (error) {
     console.error("Error verifying token:", error);
     throw new Error("Invalid token");

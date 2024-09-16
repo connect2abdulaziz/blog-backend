@@ -22,7 +22,7 @@ const authentication = catchAsync(
         new AppError(ERROR_MESSAGES.INVALID_TOKEN, STATUS_CODE.UNAUTHORIZED)
       );
     }
-    const userId: string = verifyToken(idToken);
+    const userId = verifyToken(idToken);
     // Get the user information from the DB and add them to the req object
     const freshUser = await User.findByPk(userId);
     if (!freshUser) {
