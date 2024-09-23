@@ -1,11 +1,9 @@
 import express, { Request, Response, NextFunction } from "express";
-import sequelize from "./config/sequelize";
 import appRouter from "./routes/index";
 import catchAsync from "./utils/errors/catchAsync";
 import { AppError } from "./utils/errors/appError";
 import globalErrorHandler from "./middleware/errorHandler";
 import { STATUS_CODE } from "./utils/constants/constants";
-import { APP_CONFIG } from "./config/app.config";
 
 import corsHandler from "./middleware/corsHandler";
 import swaggerUi from "swagger-ui-express";
@@ -61,20 +59,5 @@ app.all(
 
 // Global error handler
 app.use(globalErrorHandler);
-
-// Start server
-const PORT = APP_CONFIG.APP_PORT;
-app.listen(PORT, async () => {
-  console.log(`Server is running on port http://localhost:${PORT}`);
-  console.log(`Swagger docs available at http://localhost:${PORT}/api-docs`);
-  try {
-    await sequelize.authenticate();
-    console.log("Connected to the database.");
-    await sequelize.sync();
-    console.log("Connection has been established successfully.");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-});
 
 export default app;
