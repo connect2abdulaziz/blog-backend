@@ -1,0 +1,1 @@
+{"version":3,"file":"corsHandler.js","sourceRoot":"","sources":["../../middleware/corsHandler.ts"],"names":[],"mappings":";;;;;AAAA,4BAA4B;AAC5B,gDAAwB;AAExB,sCAAsC;AACtC,MAAM,WAAW,GAAG,IAAA,cAAI,EAAC;IACvB,MAAM,EAAE,GAAG;IACX,OAAO,EAAE,CAAC,KAAK,EAAE,MAAM,EAAE,OAAO,EAAE,KAAK,EAAE,QAAQ,CAAC;IAClD,cAAc,EAAE,CAAC,cAAc,EAAE,eAAe,CAAC;CAClD,CAAC,CAAC;AAEH,kBAAe,WAAW,CAAC"}

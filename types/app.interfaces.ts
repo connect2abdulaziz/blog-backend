@@ -1,5 +1,4 @@
 import { Request } from "express";
-import { AppError } from "../utils/errors/appError";
 
 export interface AuthRequest extends Request {
   userId?: number;  
