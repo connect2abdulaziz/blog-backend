@@ -15,6 +15,13 @@ export interface SuccessResponse<T> {
 }
 
 
+// type for cookie options
+export interface CookieOptions {
+  sameSite?: "strict" | "lax" | "none" | boolean;
+  secure?: boolean;
+  httpOnly?: boolean;
+  expires?: Date;
+}
 
 
 export interface CommentResponse {

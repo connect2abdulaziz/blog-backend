@@ -1,0 +1,30 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
+
+export const NODE_ENV = process.env.NODE_ENV!;
+export const APP_PORT = process.env.APP_PORT!;
+export const POSTGRES_URL = process.env.POSTGRES_URL!;
+export const LOG_LEVEL = process.env.LOG_LEVEL!;
+export const DB_USERNAME = process.env.DB_USERNAME!;
+export const DB_PASSWORD = process.env.DB_PASSWORD!;
+export const DB_NAME = process.env.DB_NAME!;
+export const DB_HOST = process.env.DB_HOST!;
+export const DB_PORT = process.env.DB_PORT!;
+export const DIALECT = process.env.DIALECT!;
+export const SEEDER_STORAGE = process.env.SEEDER_STORAGE!;
+export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY!;
+export const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN!;
+export const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY!;
+export const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN!;
+export const ADMIN_EMAIL = process.env.ADMIN_EMAIL!;
+export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD!;
+export const EMAIL_FORGOT_PASSWORD = process.env.EMAIL_FORGOT_PASSWORD!;
+export const EMAIL_PASSWORD_FORGOT_PASSWORD = process.env.EMAIL_PASSWORD_FORGOT_PASSWORD!;
+export const EMAIL_FROM = process.env.EMAIL_FROM!;
+export const EMAIL_PASS = process.env.EMAIL_PASS!;
+export const FRONTEND_URL = process.env.FRONTEND_URL!;
+export const SWAGGER_URL = process.env.SWAGGER_URL!;
+export const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME!;
+export const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY!;
+export const CLOUDINARY_API_SECRET_KEY = process.env.CLOUDINARY_API_SECRET_KEY!;

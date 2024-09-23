@@ -6,15 +6,15 @@ import globalErrorHandler from "./middleware/errorHandler";
 import { STATUS_CODE } from "./utils/constants/constants";
 
 import corsHandler from "./middleware/corsHandler";
-import swaggerUi from "swagger-ui-express";
-import YAML from "yamljs";
+//import swaggerUi from "swagger-ui-express";
+//import YAML from "yamljs";
 
 // // Resolve the __dirname equivalent in ESM
 import path from "path";
 
-// Load Swagger file
-const swaggerFilePath = path.resolve(__dirname, "swagger.yaml");
-const swaggerDocument = YAML.load(swaggerFilePath);
+// // Load Swagger file
+// const swaggerFilePath = path.resolve(__dirname, "swagger.yaml");
+// const swaggerDocument = YAML.load(swaggerFilePath);
 
 // Create Express app
 const app = express();
@@ -22,14 +22,14 @@ const app = express();
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, "client/build")));
 
-// Serve Swagger documentation
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerDocument, {
-    customCssUrl: process.env.SWAGGER_URL,
-  })
-);
+// // Serve Swagger documentation
+// app.use(
+//   "/api-docs",
+//   swaggerUi.serve,
+//   swaggerUi.setup(swaggerDocument, {
+//     customCssUrl: process.env.SWAGGER_URL,
+//   })
+// );
 
 // Middleware setup
 app.use(express.json());

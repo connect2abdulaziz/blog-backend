@@ -19,21 +19,25 @@ const appError_1 = require("./utils/errors/appError");
 const errorHandler_1 = __importDefault(require("./middleware/errorHandler"));
 const constants_1 = require("./utils/constants/constants");
 const corsHandler_1 = __importDefault(require("./middleware/corsHandler"));
-const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
-const yamljs_1 = __importDefault(require("yamljs"));
+//import swaggerUi from "swagger-ui-express";
+//import YAML from "yamljs";
 // // Resolve the __dirname equivalent in ESM
 const path_1 = __importDefault(require("path"));
-// Load Swagger file
-const swaggerFilePath = path_1.default.resolve(__dirname, "swagger.yaml");
-const swaggerDocument = yamljs_1.default.load(swaggerFilePath);
+// // Load Swagger file
+// const swaggerFilePath = path.resolve(__dirname, "swagger.yaml");
+// const swaggerDocument = YAML.load(swaggerFilePath);
 // Create Express app
 const app = (0, express_1.default)();
 // Serve static files from the React app
 app.use(express_1.default.static(path_1.default.join(__dirname, "client/build")));
-// Serve Swagger documentation
-app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocument, {
-    customCssUrl: process.env.SWAGGER_URL,
-}));
+// // Serve Swagger documentation
+// app.use(
+//   "/api-docs",
+//   swaggerUi.serve,
+//   swaggerUi.setup(swaggerDocument, {
+//     customCssUrl: process.env.SWAGGER_URL,
+//   })
+// );
 // Middleware setup
 app.use(express_1.default.json());
 // Middleware setup for multipart upload

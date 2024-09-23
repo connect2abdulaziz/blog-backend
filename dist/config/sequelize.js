@@ -9,15 +9,16 @@ const db_config_1 = require("./db.config");
 const pg_1 = __importDefault(require("pg"));
 var Environment;
 (function (Environment) {
-    Environment["Development"] = "development";
+    Environment["Development"] = "dev";
     Environment["Test"] = "test";
-    Environment["Production"] = "production";
+    Environment["Production"] = "prod";
 })(Environment || (Environment = {}));
 const env = app_config_1.APP_CONFIG.NODE_ENV || Environment.Development;
 const dbConfig = db_config_1.config;
 const config = dbConfig[env];
 // Initialize Sequelize
 let sequelize;
+console.log(env);
 if (env === Environment.Production) {
     const ProductionConfig = config;
     sequelize = new sequelize_1.Sequelize(ProductionConfig.production_db_url, {

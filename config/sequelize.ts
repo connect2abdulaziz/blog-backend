@@ -1,12 +1,13 @@
 import { APP_CONFIG } from "./app.config";
-import { Sequelize, Dialect } from "sequelize";
+import { Sequelize} from "sequelize";
+import { Dialect } from "sequelize/types";
 import { config as database } from "./db.config";
 import pg from "pg";
 
 enum Environment {
-  Development = "development",
+  Development = "dev",
   Test = "test",
-  Production = "production",
+  Production = "prod",
 }
 
 type DevelopmentOrTestConfig = {
@@ -23,9 +24,9 @@ type ProductionConfig = {
 };
 
 type Config = {
-  development: DevelopmentOrTestConfig;
+  dev: DevelopmentOrTestConfig;
   test: DevelopmentOrTestConfig;
-  production: ProductionConfig;
+  prod: ProductionConfig;
 };
 
 const env = (APP_CONFIG.NODE_ENV as keyof Config) || Environment.Development;
@@ -34,11 +35,11 @@ const config = dbConfig[env];
 
 // Initialize Sequelize
 let sequelize: Sequelize;
-
+console.log(env);
 if (env === Environment.Production) {
   const ProductionConfig = config as ProductionConfig;
-  sequelize = new Sequelize(ProductionConfig.production_db_url, {
-    dialect: ProductionConfig.dialect,
+  sequelize = new Sequelize(ProductionConfig.production_db_url!, {
+    dialect: ProductionConfig.dialect as Dialect,
     dialectModule: pg,
     dialectOptions: {
       ssl: {
