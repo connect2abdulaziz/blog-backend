@@ -26,3 +26,4 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.APP_CONFIG = void 0;
 const config = __importStar(require("./settings"));
 exports.APP_CONFIG = config;
+//# sourceMappingURL=app.config.js.map

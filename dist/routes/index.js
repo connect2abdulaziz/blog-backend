@@ -13,3 +13,4 @@ router.use('/users', user_route_1.default);
 router.use('/posts', post_route_1.default);
 router.use('/comments', comment_route_1.default);
 exports.default = router;
+//# sourceMappingURL=index.js.map

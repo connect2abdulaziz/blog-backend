@@ -29,3 +29,4 @@ exports.logger = (0, winston_1.createLogger)({
     ],
     exitOnError: false,
 });
+//# sourceMappingURL=appLogger.js.map

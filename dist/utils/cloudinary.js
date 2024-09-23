@@ -71,3 +71,4 @@ const deleteImageFromCloudinary = (publicId) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.deleteImageFromCloudinary = deleteImageFromCloudinary;
+//# sourceMappingURL=cloudinary.js.map

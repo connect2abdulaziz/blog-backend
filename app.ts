@@ -47,7 +47,7 @@ app.use("/api/v1", appRouter);
 // Handle undefined routes
 app.all(
   "*",
-  catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  catchAsync(async (req: Request, _res: Response, next: NextFunction) => {
     next(
       new AppError(
         `Can't find ${req.originalUrl} on this server`,

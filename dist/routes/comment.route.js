@@ -15,3 +15,4 @@ router.route("/").post(auth_1.authentication, comment_controller_1.createComment
 router.route("/:id").patch(auth_1.authentication, comment_controller_1.updateCommentById);
 router.route("/:id").delete(auth_1.authentication, comment_controller_1.deleteCommentById);
 exports.default = router;
+//# sourceMappingURL=comment.route.js.map

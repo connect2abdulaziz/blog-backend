@@ -64,7 +64,7 @@ const handleSpecificErrors = (err) => {
     return err;
 };
 // Global error handling middleware
-const globalErrorHandler = (err, req, res, next) => {
+const globalErrorHandler = (err, _req, res, _next) => {
     err = handleSpecificErrors(err);
     if (app_config_1.APP_CONFIG.NODE_ENV === "development") {
         return sendErrorDev(err, res);
@@ -72,3 +72,4 @@ const globalErrorHandler = (err, req, res, next) => {
     sendErrorProd(err, res);
 };
 exports.default = globalErrorHandler;
+//# sourceMappingURL=errorHandler.js.map

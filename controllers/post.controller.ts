@@ -28,7 +28,7 @@ const createPost = catchAsync(
   async (
     req: AuthRequest,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<Response<SuccessResponse<PostResponse>>> => {
     const { error, value } = postSchema.validate(req.body);
     if (error) {
@@ -77,7 +77,7 @@ const getPostById = catchAsync(
   async (
     req: Request<{ id: string }>,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<Response<SuccessResponse<PostResponse>>> => {
     const { id: postId } = req.params;
     const result = await getPostServices(Number(postId));
@@ -125,7 +125,7 @@ const deletePostById = catchAsync(
   async (
     req: AuthRequest,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<Response<SuccessResponse<PostResponse>>> => {
     const { id: postId } = req.params;
     const userId = req.userId!;

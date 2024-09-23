@@ -87,3 +87,4 @@ user_model_1.default.hasMany(Comment, { foreignKey: "userId" });
 Comment.belongsTo(Comment, { foreignKey: "parentId" });
 Comment.hasMany(Comment, { foreignKey: "parentId" });
 exports.default = Comment;
+//# sourceMappingURL=comment.model.js.map

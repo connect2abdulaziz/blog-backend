@@ -20,7 +20,7 @@ const comment_validator_1 = require("../utils/validations/comment.validator");
 const comment_service_1 = require("../services/comment.service");
 const constants_1 = require("../utils/constants/constants");
 // Create new comment
-const createComment = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const createComment = (0, catchAsync_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
     const { error, value } = comment_validator_1.commentSchema.validate(req.body);
     if (error) {
         throw new appError_1.AppError(error.details[0].message, constants_1.STATUS_CODE.BAD_REQUEST);
@@ -34,7 +34,7 @@ const createComment = (0, catchAsync_1.default)((req, res, next) => __awaiter(vo
 }));
 exports.createComment = createComment;
 // Get comments on a post
-const postComments = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const postComments = (0, catchAsync_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id: postId } = req.params;
     const { error, value } = comment_validator_1.queryCommentSchema.validate(req.query, {
         allowUnknown: true,
@@ -91,7 +91,7 @@ const updateCommentById = (0, catchAsync_1.default)((req, res, next) => __awaite
 }));
 exports.updateCommentById = updateCommentById;
 // Delete comment
-const deleteCommentById = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteCommentById = (0, catchAsync_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id: commentId } = req.params;
     const userId = req.userId;
     const deletedComment = yield (0, comment_service_1.deleteCommentServices)({
@@ -103,3 +103,4 @@ const deleteCommentById = (0, catchAsync_1.default)((req, res, next) => __awaite
         .json((0, appSuccess_1.default)(constants_1.SUCCESS_MESSAGES.COMMENT_DELETED, deletedComment));
 }));
 exports.deleteCommentById = deleteCommentById;
+//# sourceMappingURL=comment.controller.js.map

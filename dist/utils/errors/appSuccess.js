@@ -8,3 +8,4 @@ function appSuccess(message, data) {
     };
 }
 exports.default = appSuccess;
+//# sourceMappingURL=appSuccess.js.map

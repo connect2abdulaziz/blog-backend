@@ -48,3 +48,4 @@ const queryRepliesSchema = joi_1.default.object({
     page: joi_1.default.number().integer().min(1).default(1),
 });
 exports.queryRepliesSchema = queryRepliesSchema;
+//# sourceMappingURL=comment.validator.js.map

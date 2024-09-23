@@ -22,3 +22,4 @@ exports.config = {
         dialect: app_config_1.APP_CONFIG.DIALECT,
     },
 };
+//# sourceMappingURL=db.config.js.map

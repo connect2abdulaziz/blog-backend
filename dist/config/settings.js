@@ -29,3 +29,4 @@ exports.SWAGGER_URL = process.env.SWAGGER_URL;
 exports.CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 exports.CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
 exports.CLOUDINARY_API_SECRET_KEY = process.env.CLOUDINARY_API_SECRET_KEY;
+//# sourceMappingURL=settings.js.map

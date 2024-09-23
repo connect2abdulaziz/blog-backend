@@ -110,3 +110,4 @@ const changePasswordSchema = joi_1.default.object({
     }),
 });
 exports.changePasswordSchema = changePasswordSchema;
+//# sourceMappingURL=user.validator.js.map

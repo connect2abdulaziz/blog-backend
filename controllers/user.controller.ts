@@ -58,7 +58,7 @@ const verifyEmail = catchAsync(
   async (
     req: Request<{ token: string }>,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ) => {
     const { token } = req.params;
     const result = await verifyEmailServices(token);
@@ -240,7 +240,7 @@ const refreshToken = catchAsync(
   async (
     req: ITokenRequest,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<Response<SuccessResponse<UserResponse>>> => {
     const { token } = req.body;
     const tokens = await refreshTokenServices(token);
@@ -255,7 +255,7 @@ const logout = catchAsync(
   async (
     req: ITokenRequest,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<Response<SuccessResponse<UserResponse>>> => {
     const { token } = req.body;
     await logoutUserServices(token);

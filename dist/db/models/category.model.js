@@ -38,3 +38,4 @@ Category.init({
     modelName: "Category",
 });
 exports.default = Category;
+//# sourceMappingURL=category.model.js.map

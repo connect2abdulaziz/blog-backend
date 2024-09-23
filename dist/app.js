@@ -48,9 +48,10 @@ app.use(corsHandler_1.default);
 // Mount API routes
 app.use("/api/v1", index_1.default);
 // Handle undefined routes
-app.all("*", (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+app.all("*", (0, catchAsync_1.default)((req, _res, next) => __awaiter(void 0, void 0, void 0, function* () {
     next(new appError_1.AppError(`Can't find ${req.originalUrl} on this server`, constants_1.STATUS_CODE.NOT_FOUND));
 })));
 // Global error handler
 app.use(errorHandler_1.default);
 exports.default = app;
+//# sourceMappingURL=app.js.map

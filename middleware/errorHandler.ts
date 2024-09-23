@@ -83,9 +83,9 @@ const handleSpecificErrors = (err: any) => {
 // Global error handling middleware
 const globalErrorHandler = (
   err: AppError,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   err = handleSpecificErrors(err);
 

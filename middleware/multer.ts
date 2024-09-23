@@ -1,4 +1,4 @@
-import multer, { StorageEngine, FileFilterCallback } from 'multer';
+import multer, { StorageEngine } from 'multer';
 import fs from 'fs';
 import { Request } from 'express';
 
@@ -12,10 +12,10 @@ if (!fs.existsSync(uploadDir)) {
 
 // Multer Configuration
 const storage: StorageEngine = multer.diskStorage({
-  destination: (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
+  destination: (_req: Request, _file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
     cb(null, uploadDir); // Use the temporary directory
   },
-  filename: (req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
+  filename: (_req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
     cb(null, `${Date.now()}-${file.originalname}`);
   },
 });

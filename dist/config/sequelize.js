@@ -40,3 +40,4 @@ else {
     });
 }
 exports.default = sequelize;
+//# sourceMappingURL=sequelize.js.map

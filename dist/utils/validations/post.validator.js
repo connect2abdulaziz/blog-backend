@@ -62,3 +62,4 @@ const querySchema = joi_1.default.object({
     }),
 });
 exports.querySchema = querySchema;
+//# sourceMappingURL=post.validator.js.map

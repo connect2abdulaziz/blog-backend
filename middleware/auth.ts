@@ -8,7 +8,7 @@ import { verifyToken } from "../utils/helpers/tokenUtils";
 
 // Middleware for authentication
 const authentication = catchAsync(
-  async (req: AuthRequest, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, _res: Response, next: NextFunction) => {
     // 1. Get the token from the header
     let idToken = "";
     if (

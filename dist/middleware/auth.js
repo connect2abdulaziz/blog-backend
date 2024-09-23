@@ -19,7 +19,7 @@ const appError_1 = require("../utils/errors/appError");
 const constants_1 = require("../utils/constants/constants");
 const tokenUtils_1 = require("../utils/helpers/tokenUtils");
 // Middleware for authentication
-const authentication = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const authentication = (0, catchAsync_1.default)((req, _res, next) => __awaiter(void 0, void 0, void 0, function* () {
     // 1. Get the token from the header
     let idToken = "";
     if (req.headers.authorization &&
@@ -40,3 +40,4 @@ const authentication = (0, catchAsync_1.default)((req, res, next) => __awaiter(v
     return next();
 }));
 exports.authentication = authentication;
+//# sourceMappingURL=auth.js.map

@@ -19,3 +19,4 @@ router
     .patch(auth_1.authentication, multer_1.default.single("image"), post_controller_1.updatePostById);
 router.route("/:id").delete(auth_1.authentication, post_controller_1.deletePostById);
 exports.default = router;
+//# sourceMappingURL=post.route.js.map

@@ -13,12 +13,13 @@ if (!fs_1.default.existsSync(uploadDir)) {
 }
 // Multer Configuration
 const storage = multer_1.default.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
         cb(null, uploadDir); // Use the temporary directory
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
         cb(null, `${Date.now()}-${file.originalname}`);
     },
 });
 const upload = (0, multer_1.default)({ storage });
 exports.default = upload;
+//# sourceMappingURL=multer.js.map

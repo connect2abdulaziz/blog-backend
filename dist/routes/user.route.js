@@ -25,3 +25,4 @@ router.route("/delete").delete(auth_1.authentication, user_controller_1.deleteUs
 router.route("/change-password").patch(auth_1.authentication, user_controller_1.changePassword);
 router.route("/logout").post(auth_1.authentication, user_controller_1.logout);
 exports.default = router;
+//# sourceMappingURL=user.route.js.map

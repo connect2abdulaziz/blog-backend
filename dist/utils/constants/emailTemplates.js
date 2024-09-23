@@ -30,3 +30,4 @@ const EMAIL_CONSTANTS = {
     RESET_PASSWORD_TOKEN_EXPIRATION: '5m',
 };
 exports.EMAIL_CONSTANTS = EMAIL_CONSTANTS;
+//# sourceMappingURL=emailTemplates.js.map

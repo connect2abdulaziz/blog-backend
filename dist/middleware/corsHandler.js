@@ -12,3 +12,4 @@ const corsHandler = (0, cors_1.default)({
     allowedHeaders: ['Content-Type', 'Authorization'],
 });
 exports.default = corsHandler;
+//# sourceMappingURL=corsHandler.js.map

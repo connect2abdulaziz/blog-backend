@@ -32,7 +32,7 @@ const signup = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, v
 }));
 exports.signup = signup;
 // Verify Email Controller
-const verifyEmail = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const verifyEmail = (0, catchAsync_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
     const { token } = req.params;
     const result = yield (0, user_service_1.verifyEmailServices)(token);
     return res
@@ -145,7 +145,7 @@ const updateImage = (0, catchAsync_1.default)((req, res, next) => __awaiter(void
 }));
 exports.updateImage = updateImage;
 // Refresh Token Controller
-const refreshToken = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const refreshToken = (0, catchAsync_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
     const { token } = req.body;
     const tokens = yield (0, user_service_1.refreshTokenServices)(token);
     return res
@@ -154,7 +154,7 @@ const refreshToken = (0, catchAsync_1.default)((req, res, next) => __awaiter(voi
 }));
 exports.refreshToken = refreshToken;
 // Logout Controller
-const logout = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const logout = (0, catchAsync_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
     const { token } = req.body;
     yield (0, user_service_1.logoutUserServices)(token);
     return res
@@ -162,3 +162,4 @@ const logout = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, v
         .json((0, appSuccess_1.default)(constants_1.SUCCESS_MESSAGES.LOGOUT_SUCCESS, {}));
 }));
 exports.logout = logout;
+//# sourceMappingURL=user.controller.js.map

@@ -101,3 +101,4 @@ Post.belongsTo(category_model_1.default, { foreignKey: "categoryId" });
 user_model_1.default.hasMany(Post, { foreignKey: "userId" });
 Post.belongsTo(user_model_1.default, { foreignKey: "userId" });
 exports.default = Post;
+//# sourceMappingURL=post.model.js.map

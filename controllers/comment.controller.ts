@@ -30,7 +30,7 @@ const createComment = catchAsync(
   async (
     req: AuthRequest,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<Response<SuccessResponse<CommentResponse>>> => {
     const { error, value } = commentSchema.validate(req.body);
     if (error) {
@@ -51,7 +51,7 @@ const postComments = catchAsync(
   async (
     req: Request<{ id: string }>,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<Response<SuccessResponse<CommentResponse>>> => {
     const { id: postId } = req.params;
     const { error, value } = queryCommentSchema.validate(req.query, {
@@ -130,7 +130,7 @@ const deleteCommentById = catchAsync(
   async (
     req: AuthRequest & Request<{ id: string }>,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): Promise<Response<SuccessResponse<CommentResponse>>> => {
     const { id: commentId } = req.params;
     const userId: number = req.userId!;

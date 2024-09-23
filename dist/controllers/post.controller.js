@@ -20,7 +20,7 @@ const post_validator_1 = require("../utils/validations/post.validator");
 const post_service_1 = require("../services/post.service");
 const constants_1 = require("../utils/constants/constants");
 // Create new post
-const createPost = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const createPost = (0, catchAsync_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
     const { error, value } = post_validator_1.postSchema.validate(req.body);
     if (error) {
         throw new appError_1.AppError(error.details[0].message, constants_1.STATUS_CODE.BAD_REQUEST);
@@ -54,7 +54,7 @@ const getPosts = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0,
 }));
 exports.getPosts = getPosts;
 // Get post by id
-const getPostById = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const getPostById = (0, catchAsync_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id: postId } = req.params;
     const result = yield (0, post_service_1.getPostServices)(Number(postId));
     return res
@@ -83,7 +83,7 @@ const updatePostById = (0, catchAsync_1.default)((req, res, next) => __awaiter(v
 }));
 exports.updatePostById = updatePostById;
 // Delete post
-const deletePostById = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const deletePostById = (0, catchAsync_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id: postId } = req.params;
     const userId = req.userId;
     const deletedPostId = yield (0, post_service_1.deletePostServices)({
@@ -95,3 +95,4 @@ const deletePostById = (0, catchAsync_1.default)((req, res, next) => __awaiter(v
         .json((0, appSuccess_1.default)(constants_1.SUCCESS_MESSAGES.POST_DELETED, deletedPostId));
 }));
 exports.deletePostById = deletePostById;
+//# sourceMappingURL=post.controller.js.map
