@@ -19,8 +19,6 @@ type DevelopmentOrTestConfig = {
 };
 
 type ProductionConfig = {
-  host: string;
-  port: string;
   production_db_url: string;
   dialect: Dialect;
 };
@@ -41,8 +39,6 @@ console.log(env);
 if (env === Environment.Production) {
   const ProductionConfig = config as ProductionConfig;
   sequelize = new Sequelize(ProductionConfig.production_db_url!, {
-    host: ProductionConfig.host,
-    port: Number(ProductionConfig.port),
     dialect: ProductionConfig.dialect as Dialect,
     dialectModule: pg,
     dialectOptions: {

@@ -1,4 +1,3 @@
-import { changePasswordSchema } from "utils/validations/user.validator";
 import { APP_CONFIG } from "./app.config";
 
 export const config = {
