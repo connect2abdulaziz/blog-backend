@@ -1,7 +1,7 @@
 {
   "name": "blog-backend-ts",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "NODE_ENV=dev ts-node-dev --respawn --transpile-only server.ts",
     "start": "NODE_ENV=prod node dist/server.js",

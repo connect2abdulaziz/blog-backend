@@ -9,6 +9,7 @@ exports.APP_CONFIG = {
     POSTGRES_URL: process.env.POSTGRES_URL,
     NODE_ENV: process.env.NODE_ENV,
     APP_PORT: process.env.APP_PORT,
+    LOG_LEVEL: process.env.LOG_LEVEL,
     // DB Credentials
     DB_USERNAME: process.env.DB_USERNAME,
     DB_PASSWORD: process.env.DB_PASSWORD,

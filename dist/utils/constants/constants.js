@@ -77,6 +77,9 @@ exports.ERROR_MESSAGES = {
     DB_CONNECTION_ERROR: "Database connection error",
     INTERNAL_SERVER_ERROR: "Something went wrong. Please try again later.",
     FORBIDDEN: 'You don\'t have permission to perform this action',
+    UNCAUGHT_EXCEPTION_ERROR: "Uncaught Exception Error",
+    UNHANDLED_REJECTION_ERROR: "Unhandled Rejection Error",
+    UNEXPECTED_ERROR: "An unexpected error occurred!",
 };
 exports.SUCCESS_MESSAGES = {
     // User-related messages
@@ -104,6 +107,9 @@ exports.SUCCESS_MESSAGES = {
     COMMENT_UPDATED: 'Comment updated successfully',
     COMMENT_DELETED: 'Comment deleted successfully',
     REPLIES_RETRIEVED: 'Replies retrieved successfully',
+    // DB-related messages
+    DB_CONNECTION_SUCCESS: "DB Connection Successful",
+    HTTPS_REQUEST: "AN HTTPS REQUEST HAS BEEN INITIATED",
 };
 exports.PASSWORD_PATTERN = {
     REGEXP: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
